@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blushed Style — AI Virtual Wardrobe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ── Reset & Variables ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #FDFBF9;
+  --bg2:       #FFF0F5;
+  --bg3:       #FDF6F9;
+  --white:     #FFFFFF;
+  --pink:      #E75480;
+  --pink-soft: #F4A7BB;
+  --pink-pale: #FDEEF4;
+  --pink-deep: #C2185B;
+  --border:    #F2C4D0;
+  --text:      #2D1B22;
+  --muted:     #8B5A6B;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+  --radius:    14px;
+  --radius-sm: 8px;
+  --radius-pill: 40px;
+  --transition: 0.22s ease;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Custom Scrollbar ───────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--pink-soft); border-radius: 10px; }
+
+/* ── Utility ────────────────────────────────────────── */
+.container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+.tag-pill {
+  display: inline-block;
+  font-size: 11px; font-weight: 500;
+  padding: 4px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--pink-pale);
+  color: var(--pink-deep);
+  border: 1px solid var(--border);
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  padding: 11px 26px;
+  background: var(--pink); color: #fff;
+  border: none; border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  text-decoration: none;
+}
+.btn-primary:hover { background: var(--pink-deep); transform: translateY(-1px); }
+.btn-outline {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+  padding: 10px 24px;
+  background: transparent; color: var(--pink);
+  border: 1.5px solid var(--border); border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+  text-decoration: none;
+}
+.btn-outline:hover { border-color: var(--pink-soft); background: var(--pink-pale); transform: translateY(-1px); }
+
+/* ── Animations ─────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.fade-up { animation: fadeUp 0.7s ease both; }
+.fade-up-d1 { animation: fadeUp 0.7s 0.1s ease both; }
+.fade-up-d2 { animation: fadeUp 0.7s 0.2s ease both; }
+.fade-up-d3 { animation: fadeUp 0.7s 0.3s ease both; }
+.fade-up-d4 { animation: fadeUp 0.7s 0.4s ease both; }
+.fade-up-d5 { animation: fadeUp 0.7s 0.5s ease both; }
+.fade-up-d6 { animation: fadeUp 0.7s 0.6s ease both; }
+
+/* ── Navbar ─────────────────────────────────────────── */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(253,251,249,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  transition: box-shadow var(--transition);
+}
+.navbar.scrolled { box-shadow: 0 2px 24px rgba(231,84,128,0.07); }
+.navbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 66px;
+}
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 600;
+  color: var(--text); text-decoration: none;
+  letter-spacing: 0.3px;
+}
+.logo span { color: var(--pink); }
+.logo-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--pink);
+  border-radius: 50%;
+  margin-left: 2px; margin-bottom: 2px;
+  animation: pulse-dot 2s infinite;
+  vertical-align: middle;
+}
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: 13px; font-weight: 400; color: var(--muted);
+  text-decoration: none; transition: color var(--transition);
+}
+.nav-links a:hover { color: var(--pink); }
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-login {
+  font-size: 13px; font-weight: 400; color: var(--muted);
+  background: none; border: none; cursor: pointer;
+  transition: color var(--transition);
+}
+.nav-login:hover { color: var(--pink); }
+.hamburger {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.hamburger span {
+  display: block; width: 22px; height: 1.5px;
+  background: var(--text); border-radius: 2px;
+  transition: all var(--transition);
+}
+
+/* Mobile nav overlay */
+.mobile-nav {
+  display: none; position: fixed; inset: 0; z-index: 99;
+  background: var(--white);
+  padding: 90px 32px 32px;
+  flex-direction: column; gap: 24px;
+}
+.mobile-nav.open { display: flex; animation: fadeIn 0.25s ease; }
+.mobile-nav a {
+  font-family: var(--font-display); font-size: 32px; font-weight: 500;
+  color: var(--text); text-decoration: none;
+  border-bottom: 1px solid var(--border); padding-bottom: 20px;
+  transition: color var(--transition);
+}
+.mobile-nav a:hover { color: var(--pink); }
+
+/* ── Hero Section ───────────────────────────────────── */
+.hero {
+  padding: 140px 0 80px;
+  background: var(--bg3);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -120px; right: -120px;
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, rgba(231,84,128,0.10) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -80px; left: -80px;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(244,167,187,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 500; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--pink);
+  margin-bottom: 20px;
+}
+.hero-eyebrow-dot {
+  width: 6px; height: 6px; background: var(--pink);
+  border-radius: 50%; animation: pulse-dot 2s infinite;
+}
+.hero-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(42px, 5.5vw, 66px);
+  font-weight: 500; line-height: 1.12;
+  letter-spacing: -0.5px;
+  margin-bottom: 22px;
+  color: var(--text);
+}
+.hero-h1 em { color: var(--pink); font-style: italic; }
+.hero-p {
+  font-size: 15px; font-weight: 300; line-height: 1.75;
+  color: var(--muted); margin-bottom: 36px;
+  max-width: 420px;
+}
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+.hero-trust {
+  display: flex; align-items: center; gap: 10px;
+}
+.trust-avatars { display: flex; }
+.trust-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 2px solid var(--white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 500;
+  margin-left: -8px; background: var(--bg2);
+  color: var(--pink-deep);
+}
+.trust-avatar:first-child { margin-left: 0; }
+.trust-text { font-size: 12px; color: var(--muted); }
+.trust-text strong { color: var(--pink); font-weight: 500; }
+
+/* Hero right — wardrobe visual */
+.hero-visual {
+  position: relative;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.wardrobe-card-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+}
+.wardrobe-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 10px;
+  text-align: center;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  cursor: default;
+  animation: float 4s ease-in-out infinite;
+}
+.wardrobe-card:nth-child(2) { animation-delay: -0.8s; }
+.wardrobe-card:nth-child(3) { animation-delay: -1.6s; }
+.wardrobe-card:nth-child(4) { animation-delay: -2.4s; }
+.wardrobe-card:nth-child(5) { animation-delay: -3.2s; }
+.wardrobe-card:nth-child(6) { animation-delay: -4s; }
+.wardrobe-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--pink-soft);
+  box-shadow: 0 8px 24px rgba(231,84,128,0.12);
+}
+.wardrobe-card-icon { font-size: 28px; margin-bottom: 7px; }
+.wardrobe-card-name { font-size: 11px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.wardrobe-card-sub  { font-size: 10px; color: var(--muted); }
+
+.ai-badge {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 10px 18px;
+  font-size: 12px; font-weight: 500; color: var(--pink-deep);
+}
+.ai-badge-dot {
+  width: 8px; height: 8px; background: var(--pink);
+  border-radius: 50%;
+  animation: pulse-dot 1.5s infinite;
+}
+
+.occasions-strip {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  margin-top: 4px;
+}
+
+/* ── Section shared ─────────────────────────────────── */
+section { padding: 100px 0; }
+.section-eyebrow {
+  font-size: 11px; font-weight: 500; letter-spacing: 1.8px;
+  text-transform: uppercase; color: var(--pink);
+  margin-bottom: 12px; display: block;
+}
+.section-h2 {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4vw, 50px);
+  font-weight: 500; line-height: 1.15;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.section-h2 em { font-style: italic; color: var(--pink); }
+.section-p {
+  font-size: 15px; font-weight: 300; line-height: 1.75;
+  color: var(--muted); max-width: 520px;
+}
+.text-center { text-align: center; }
+.text-center .section-p { margin: 0 auto; }
+
+/* ── Features Section ───────────────────────────────── */
+.features { background: var(--white); }
+.features-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-top: 60px;
+}
+.feature-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px 28px;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  position: relative; overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--pink-soft), var(--pink));
+  opacity: 0; transition: opacity var(--transition);
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(231,84,128,0.10);
+  border-color: var(--pink-soft);
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-icon-wrap {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin-bottom: 22px;
+}
+.feature-card h3 {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500;
+  margin-bottom: 10px; color: var(--text);
+}
+.feature-card p { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--muted); }
+.feature-list {
+  list-style: none; margin-top: 16px;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.feature-list li {
+  font-size: 12px; color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.feature-list li::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--pink-soft); border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── How It Works ───────────────────────────────────── */
+.how { background: var(--bg3); }
+.steps-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin-top: 60px;
+  position: relative;
+}
+.steps-grid::before {
+  content: '';
+  position: absolute;
+  top: 36px; left: calc(16.66% + 20px); right: calc(16.66% + 20px);
+  height: 1px; background: var(--border);
+  pointer-events: none;
+}
+.step {
+  text-align: center; padding: 0 24px;
+  position: relative;
+}
+.step-num {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--white); border: 1.5px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 26px; font-weight: 500;
+  color: var(--pink);
+  margin: 0 auto 24px;
+  position: relative; z-index: 1;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.step:hover .step-num {
+  background: var(--pink); color: #fff;
+  border-color: var(--pink);
+  transform: scale(1.08);
+}
+.step h3 {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 500;
+  margin-bottom: 10px; color: var(--text);
+}
+.step p { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--muted); }
+
+/* ── Occasions Section ──────────────────────────────── */
+.occasions { background: var(--white); }
+.occasions-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-top: 56px;
+}
+.occasion-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.occasion-card::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 18px;
+  background: var(--pink);
+  opacity: 0; transition: opacity var(--transition);
+  pointer-events: none;
+}
+.occasion-card:hover {
+  border-color: var(--pink);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(231,84,128,0.15);
+}
+.occasion-card:hover .occ-label { color: var(--pink-deep); }
+.occ-emoji { font-size: 30px; margin-bottom: 10px; }
+.occ-label { font-size: 13px; font-weight: 500; color: var(--text); transition: color var(--transition); }
+.occ-sub   { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+/* ── Outfit Preview Section ─────────────────────────── */
+.preview-section { background: var(--bg3); }
+.preview-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 64px; align-items: center;
+}
+.preview-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--pink);
+  margin-bottom: 16px;
+}
+.preview-h {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 3.5vw, 46px); font-weight: 500;
+  line-height: 1.18; margin-bottom: 20px; color: var(--text);
+}
+.preview-h em { font-style: italic; color: var(--pink); }
+.preview-p { font-size: 14px; font-weight: 300; line-height: 1.75; color: var(--muted); margin-bottom: 32px; }
+
+.outfit-ui {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+}
+.outfit-ui-header {
+  background: var(--bg2);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.ui-dot { width: 10px; height: 10px; border-radius: 50%; }
+.outfit-ui-body { padding: 20px; }
+.occ-select-row {
+  display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 18px;
+}
+.occ-chip {
+  font-size: 11px; font-weight: 500;
+  padding: 5px 14px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: transparent; color: var(--muted);
+  cursor: pointer; transition: all var(--transition);
+  font-family: var(--font-body);
+}
+.occ-chip.active {
+  background: var(--pink); color: #fff; border-color: var(--pink);
+}
+.occ-chip:hover:not(.active) { border-color: var(--pink-soft); color: var(--pink); }
+.result-box {
+  background: var(--bg3);
+  border-radius: 14px;
+  padding: 16px;
+}
+.result-title {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 500;
+  color: var(--text); margin-bottom: 12px;
+}
+.result-items {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+}
+.result-item {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 14px;
+  text-align: center; min-width: 68px;
+}
+.result-item-icon { font-size: 22px; margin-bottom: 3px; }
+.result-item-label { font-size: 9px; color: var(--muted); }
+.result-item-val   { font-size: 10px; font-weight: 500; color: var(--text); }
+.result-plus       { font-size: 16px; color: var(--pink-soft); }
+.styling-tip {
+  font-size: 12px; font-style: italic; color: var(--pink-deep);
+  background: var(--pink-pale);
+  border-radius: 8px; padding: 10px 14px;
+  border-left: 3px solid var(--pink-soft);
+  margin-bottom: 14px;
+}
+.result-actions { display: flex; gap: 8px; }
+.res-btn-primary {
+  flex: 1; font-size: 12px; font-weight: 500;
+  padding: 9px 0; border-radius: var(--radius-pill);
+  background: var(--pink); color: #fff; border: none;
+  cursor: pointer; font-family: var(--font-body);
+  transition: background var(--transition);
+}
+.res-btn-primary:hover { background: var(--pink-deep); }
+.res-btn-outline {
+  font-size: 12px; padding: 9px 18px; border-radius: var(--radius-pill);
+  background: transparent; color: var(--pink);
+  border: 1px solid var(--border); cursor: pointer;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+.res-btn-outline:hover { border-color: var(--pink-soft); background: var(--pink-pale); }
+
+/* ── Testimonials ───────────────────────────────────── */
+.testimonials { background: var(--white); }
+.testi-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 20px; margin-top: 56px;
+}
+.testi-card {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.testi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(231,84,128,0.09);
+}
+.stars { display: flex; gap: 3px; margin-bottom: 14px; }
+.star  { font-size: 14px; color: var(--pink); }
+.testi-text {
+  font-size: 14px; font-weight: 300; line-height: 1.75;
+  color: var(--text); margin-bottom: 20px;
+  font-style: italic;
+}
+.testi-author { display: flex; align-items: center; gap: 10px; }
+.testi-av {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 500; color: var(--pink-deep);
+  border: 1px solid var(--border);
+}
+.testi-name  { font-size: 13px; font-weight: 500; color: var(--text); }
+.testi-city  { font-size: 11px; color: var(--muted); }
+
+/* ── CTA Section ────────────────────────────────────── */
+.cta-section {
+  background: var(--bg2);
+  padding: 100px 0;
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute; top: -100px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(231,84,128,0.10) 0%, transparent 65%);
+  border-radius: 50%; pointer-events: none;
+}
+.cta-inner { text-align: center; position: relative; z-index: 1; }
+.cta-h {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 60px); font-weight: 500;
+  line-height: 1.15; margin-bottom: 18px; color: var(--text);
+}
+.cta-h em { font-style: italic; color: var(--pink); }
+.cta-p { font-size: 15px; font-weight: 300; color: var(--muted); margin-bottom: 36px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.cta-note { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+/* ── Footer ─────────────────────────────────────────── */
+footer {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 60px 0 36px;
+}
+.footer-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px; margin-bottom: 48px;
+}
+.footer-brand p { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--muted); margin-top: 12px; max-width: 240px; }
+.footer-col h4 {
+  font-size: 11px; font-weight: 500; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 16px;
+}
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col ul li a {
+  font-size: 13px; color: var(--muted); text-decoration: none;
+  transition: color var(--transition);
+}
+.footer-col ul li a:hover { color: var(--pink); }
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 28px; border-top: 1px solid var(--border);
+}
+.footer-copy { font-size: 12px; color: var(--muted); }
+.footer-love { font-size: 12px; color: var(--muted); }
+.footer-love span { color: var(--pink); }
+
+/* ── Scroll Reveal ──────────────────────────────────── */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 968px) {
+  .hero-grid         { grid-template-columns: 1fr; gap: 48px; }
+  .features-grid     { grid-template-columns: 1fr; }
+  .steps-grid        { grid-template-columns: 1fr; gap: 32px; }
+  .steps-grid::before{ display: none; }
+  .occasions-grid    { grid-template-columns: repeat(2,1fr); }
+  .preview-inner     { grid-template-columns: 1fr; gap: 40px; }
+  .testi-grid        { grid-template-columns: 1fr; }
+  .footer-grid       { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .nav-links, .nav-actions .btn-primary { display: none; }
+  .hamburger { display: flex; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+}
+@media (max-width: 560px) {
+  .hero { padding: 100px 0 60px; }
+  .occasions-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-btns { flex-direction: column; align-items: flex-start; }
+  .cta-btns  { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="navbar-inner">
+      <a href="#" class="logo">Blushed<span>.</span>Style<span class="logo-dot"></span></a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#occasions">Occasions</a>
+        <a href="#testimonials">Reviews</a>
+      </div>
+      <div class="nav-actions">
+        <a href="pages/auth.html" class="nav-login" style="text-decoration:none">Login</a>
+        <a href="pages/auth.html" class="btn-primary">Start Free ✦</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mobile-nav" id="mobileNav">
+  <a href="#features" onclick="closeMobileNav()">Features</a>
+  <a href="#how" onclick="closeMobileNav()">How it works</a>
+  <a href="#occasions" onclick="closeMobileNav()">Occasions</a>
+  <a href="#testimonials" onclick="closeMobileNav()">Reviews</a>
+  <a href="#" onclick="closeMobileNav()" style="color:var(--pink)">Get Started Free →</a>
+</div>
+
+<!-- ── Hero ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+
+      <!-- Left -->
+      <div>
+        <div class="hero-eyebrow fade-up">
+          <span class="hero-eyebrow-dot"></span>
+          AI-Powered Wardrobe for Girls
+        </div>
+        <h1 class="hero-h1 fade-up-d1">
+          Your wardrobe,<br>
+          your <em>rules.</em>
+        </h1>
+        <p class="hero-p fade-up-d2">
+          Upload your clothes once and get intelligent outfit combinations
+          for every occasion — Eid, bridal events, office days, brunches,
+          dinners, and everything in between.
+        </p>
+        <div class="hero-btns fade-up-d3">
+          <a href="#" class="btn-primary">Start for free ✦</a>
+          <a href="#how" class="btn-outline">See how it works</a>
+        </div>
+        <div class="hero-trust fade-up-d4">
+          <div class="trust-avatars">
+            <div class="trust-avatar">S</div>
+            <div class="trust-avatar">A</div>
+            <div class="trust-avatar">M</div>
+            <div class="trust-avatar">Z</div>
+          </div>
+          <p class="trust-text">
+            Loved by <strong>2,400+ girls</strong> — totally free to start
+          </p>
+        </div>
+        <div class="occasions-strip fade-up-d5" style="margin-top:28px">
+          <span class="tag-pill">💍 Wedding</span>
+          <span class="tag-pill">🌙 Eid</span>
+          <span class="tag-pill">💼 Office</span>
+          <span class="tag-pill">🎓 University</span>
+          <span class="tag-pill">☕ Brunch</span>
+          <span class="tag-pill">🎉 Party</span>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div class="hero-visual fade-up-d2">
+        <div class="wardrobe-card-grid">
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">👗</div>
+            <div class="wardrobe-card-name">Dresses</div>
+            <div class="wardrobe-card-sub">18 items</div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">👚</div>
+            <div class="wardrobe-card-name">Tops</div>
+            <div class="wardrobe-card-sub">24 items</div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">👛</div>
+            <div class="wardrobe-card-name">Bags</div>
+            <div class="wardrobe-card-sub">9 items</div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">👠</div>
+            <div class="wardrobe-card-name">Heels</div>
+            <div class="wardrobe-card-sub">12 items</div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">💍</div>
+            <div class="wardrobe-card-name">Jewelry</div>
+            <div class="wardrobe-card-sub">31 items</div>
+          </div>
+          <div class="wardrobe-card">
+            <div class="wardrobe-card-icon">🧣</div>
+            <div class="wardrobe-card-name">Dupattas</div>
+            <div class="wardrobe-card-sub">7 items</div>
+          </div>
+        </div>
+        <div class="ai-badge">
+          <span class="ai-badge-dot"></span>
+          AI is matching your outfit for tonight's dinner…
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ─────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-eyebrow">✦ What you get</span>
+      <h2 class="section-h2">Everything your wardrobe <em>deserves</em></h2>
+      <p class="section-p">Three powerful tools in one beautiful app — built for girls who love fashion and want to dress effortlessly every day.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon-wrap">👗</div>
+        <h3>Smart Wardrobe</h3>
+        <p>Upload all your clothes with a photo. Tag each item with color, style, occasion, and season — then browse your entire wardrobe from anywhere.</p>
+        <ul class="feature-list">
+          <li>Upload photos from your phone</li>
+          <li>Tag by color, style &amp; brand</li>
+          <li>Filter &amp; search instantly</li>
+          <li>Edit or delete anytime</li>
+        </ul>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.1s">
+        <div class="feature-icon-wrap">✨</div>
+        <h3>AI Outfit Stylist</h3>
+        <p>Pick an occasion — Eid, office, brunch, wedding — and let our AI build the perfect outfit using only the clothes you already own.</p>
+        <ul class="feature-list">
+          <li>Matches by color compatibility</li>
+          <li>Style-aware combinations</li>
+          <li>Suggests shoes &amp; accessories</li>
+          <li>Save favorite looks</li>
+        </ul>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.2s">
+        <div class="feature-icon-wrap">📅</div>
+        <h3>Event Calendar</h3>
+        <p>Add upcoming events and link an outfit to each one. Never spend an hour deciding what to wear the night before an event again.</p>
+        <ul class="feature-list">
+          <li>Add events by date &amp; occasion</li>
+          <li>Link saved outfits to events</li>
+          <li>Outfit reminders via email</li>
+          <li>Weekly look planner</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works ──────────────────────────────────────── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-eyebrow">✦ Simple process</span>
+      <h2 class="section-h2">Dressed perfectly in <em>3 steps</em></h2>
+      <p class="section-p">No complicated setup. Just upload, select, and wear your best outfit every single day.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <h3>Upload your clothes</h3>
+        <p>Take photos of every item in your wardrobe — tops, dresses, shoes, jewelry, bags. Add a few tags and you're done. Takes less than 10 minutes.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:0.15s">
+        <div class="step-num">02</div>
+        <h3>Choose your occasion</h3>
+        <p>Tell us where you're going. Wedding? Office meeting? Eid gathering? Brunch with friends? Pick your occasion and let the magic begin.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">03</div>
+        <h3>Wear your best look</h3>
+        <p>We match colors, styles, and occasions from your own wardrobe and show you the perfect combination. Save it, wear it, own it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Occasions ─────────────────────────────────────────── -->
+<section class="occasions" id="occasions">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-eyebrow">✦ Every event covered</span>
+      <h2 class="section-h2">Dressed for every <em>occasion</em></h2>
+      <p class="section-p">From traditional Eid looks to modern office fits — we've got every event in your social calendar covered.</p>
+    </div>
+    <div class="occasions-grid">
+      <div class="occasion-card reveal">
+        <div class="occ-emoji">💍</div>
+        <div class="occ-label">Wedding</div>
+        <div class="occ-sub">Bridal &amp; guest looks</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.06s">
+        <div class="occ-emoji">🌙</div>
+        <div class="occ-label">Eid</div>
+        <div class="occ-sub">Traditional &amp; modern</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.12s">
+        <div class="occ-emoji">💼</div>
+        <div class="occ-label">Office</div>
+        <div class="occ-sub">Professional &amp; smart</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.18s">
+        <div class="occ-emoji">🎓</div>
+        <div class="occ-label">University</div>
+        <div class="occ-sub">Casual campus style</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.24s">
+        <div class="occ-emoji">☕</div>
+        <div class="occ-label">Brunch</div>
+        <div class="occ-sub">Chic weekend vibes</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.30s">
+        <div class="occ-emoji">🍽</div>
+        <div class="occ-label">Dinner</div>
+        <div class="occ-sub">Elegant evenings</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.36s">
+        <div class="occ-emoji">🎉</div>
+        <div class="occ-label">Party</div>
+        <div class="occ-sub">Stand out always</div>
+      </div>
+      <div class="occasion-card reveal" style="transition-delay:0.42s">
+        <div class="occ-emoji">✈️</div>
+        <div class="occ-label">Vacation</div>
+        <div class="occ-sub">Travel in style</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Outfit Preview ────────────────────────────────────── -->
+<section class="preview-section">
+  <div class="container">
+    <div class="preview-inner">
+
+      <div class="reveal">
+        <div class="preview-label">✦ See it in action</div>
+        <h2 class="preview-h">Your AI stylist, <em>always ready</em></h2>
+        <p class="preview-p">
+          Pick any occasion and our AI instantly builds an outfit using your own uploaded items — matching colors, complementing styles, and suggesting accessories.
+          Every combination comes with a personal styling tip.
+        </p>
+        <a href="#" class="btn-primary">Try it yourself →</a>
+      </div>
+
+      <div class="reveal" style="transition-delay:0.2s">
+        <div class="outfit-ui">
+          <div class="outfit-ui-header">
+            <div class="ui-dot" style="background:#ffb3c6"></div>
+            <div class="ui-dot" style="background:#ffd6e0"></div>
+            <div class="ui-dot" style="background:#fff0f5"></div>
+            <span style="font-size:11px;color:var(--muted);margin-left:8px">Blushed Style — Outfit Generator</span>
+          </div>
+          <div class="outfit-ui-body">
+            <div style="font-size:11px;font-weight:500;color:var(--muted);margin-bottom:8px">Select occasion:</div>
+            <div class="occ-select-row" id="occChips">
+              <button class="occ-chip active" data-occ="wedding">💍 Wedding</button>
+              <button class="occ-chip" data-occ="eid">🌙 Eid</button>
+              <button class="occ-chip" data-occ="office">💼 Office</button>
+              <button class="occ-chip" data-occ="brunch">☕ Brunch</button>
+              <button class="occ-chip" data-occ="party">🎉 Party</button>
+            </div>
+            <div class="result-box">
+              <div class="result-title" id="resultTitle">Here's your wedding look ✨</div>
+              <div class="result-items" id="resultItems">
+                <div class="result-item">
+                  <div class="result-item-icon">🥻</div>
+                  <div class="result-item-label">Dress</div>
+                  <div class="result-item-val">Blush Maxi</div>
+                </div>
+                <div class="result-plus">+</div>
+                <div class="result-item">
+                  <div class="result-item-icon">👠</div>
+                  <div class="result-item-label">Heels</div>
+                  <div class="result-item-val">Nude Strappy</div>
+                </div>
+                <div class="result-plus">+</div>
+                <div class="result-item">
+                  <div class="result-item-icon">👛</div>
+                  <div class="result-item-label">Clutch</div>
+                  <div class="result-item-val">Gold Mini</div>
+                </div>
+                <div class="result-plus">+</div>
+                <div class="result-item">
+                  <div class="result-item-icon">💍</div>
+                  <div class="result-item-label">Jewelry</div>
+                  <div class="result-item-val">Rose Gold</div>
+                </div>
+              </div>
+              <div class="styling-tip" id="stylingTip">
+                Blush and nude tones create a soft, bridal-ready palette. Rose gold jewelry adds warmth without overpowering the look.
+              </div>
+              <div class="result-actions">
+                <button class="res-btn-primary">♡ Save this look</button>
+                <button class="res-btn-outline">Try another</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ──────────────────────────────────────── -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="text-center reveal">
+      <span class="section-eyebrow">✦ Loved by girls</span>
+      <h2 class="section-h2">What they're <em>saying</em></h2>
+      <p class="section-p">Real girls, real wardrobes, real confidence. Here's what our community has to say.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-text">"I used to spend 45 minutes every morning deciding what to wear. Now I just open Blushed Style, pick my occasion, and my outfit is ready. It literally changed my mornings."</p>
+        <div class="testi-author">
+          <div class="testi-av">S</div>
+          <div>
+            <div class="testi-name">Sana Malik</div>
+            <div class="testi-city">Lahore, Pakistan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal" style="transition-delay:0.12s">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-text">"The Eid feature is AMAZING. I uploaded all my shalwar kameez and it paired them with the perfect jewellery and shoes from my own collection. I looked stunning."</p>
+        <div class="testi-author">
+          <div class="testi-av">A</div>
+          <div>
+            <div class="testi-name">Ayesha Noor</div>
+            <div class="testi-city">Karachi, Pakistan</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card reveal" style="transition-delay:0.24s">
+        <div class="stars">
+          <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        </div>
+        <p class="testi-text">"As a uni student, I was always wearing the same 3 outfits. This app showed me I already have so many beautiful combinations I'd never tried. Literally obsessed."</p>
+        <div class="testi-author">
+          <div class="testi-av">M</div>
+          <div>
+            <div class="testi-name">Maryam Tariq</div>
+            <div class="testi-city">Islamabad, Pakistan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────────────────────── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <h2 class="cta-h">Start styling <em>smarter</em><br>today. For free.</h2>
+      <p class="cta-p">Join thousands of girls who already dress effortlessly every day.<br>No credit card needed. Set up in under 5 minutes.</p>
+      <div class="cta-btns">
+        <a href="pages/auth.html" class="btn-primary" style="font-size:15px;padding:14px 32px">Create your wardrobe ✦</a>
+        <a href="#features" class="btn-outline" style="font-size:15px;padding:13px 28px">Learn more</a>
+      </div>
+      <p class="cta-note">✓ Free forever &nbsp;&nbsp; ✓ No credit card &nbsp;&nbsp; ✓ Set up in 5 minutes</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="font-size:20px">Blushed<span>.</span>Style</a>
+        <p>AI-powered virtual wardrobe built for girls who love fashion. Dress effortlessly for every occasion using clothes you already own.</p>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <span class="tag-pill">Made with ♡ for girls</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">How it works</a></li>
+          <li><a href="#">Occasions</a></li>
+          <li><a href="#">Pricing</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="#">Login</a></li>
+          <li><a href="#">Sign up free</a></li>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">My wardrobe</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Privacy policy</a></li>
+          <li><a href="#">Terms of service</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2025 Blushed Style. All rights reserved.</p>
+      <p class="footer-love">Made with <span>♡</span> for every girl's wardrobe</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ── JavaScript ────────────────────────────────────────── -->
+<script>
+/* Navbar scroll effect */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* Hamburger menu */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+hamburger.addEventListener('click', () => {
+  mobileNav.classList.toggle('open');
+  const spans = hamburger.querySelectorAll('span');
+  if (mobileNav.classList.contains('open')) {
+    spans[0].style.transform = 'rotate(45deg) translate(5px,5px)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
+  } else {
+    spans.forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+  }
+});
+function closeMobileNav() {
+  mobileNav.classList.remove('open');
+  hamburger.querySelectorAll('span').forEach(s => { s.style.transform = ''; s.style.opacity = ''; });
+}
+
+/* Scroll reveal */
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      revealObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(r => revealObserver.observe(r));
+
+/* Outfit chip switcher */
+const outfits = {
+  wedding: {
+    title: "Here's your wedding look ✨",
+    items: [
+      { icon: '🥻', label: 'Dress',   val: 'Blush Maxi' },
+      { icon: '👠', label: 'Heels',   val: 'Nude Strappy' },
+      { icon: '👛', label: 'Clutch',  val: 'Gold Mini' },
+      { icon: '💍', label: 'Jewelry', val: 'Rose Gold' }
+    ],
+    tip: "Blush and nude tones create a soft, bridal-ready palette. Rose gold jewelry adds warmth without overpowering the look."
+  },
+  eid: {
+    title: "Here's your Eid look ✨",
+    items: [
+      { icon: '🥻', label: 'Kameez', val: 'Ivory Emb.' },
+      { icon: '👟', label: 'Khussa', val: 'Gold Emb.' },
+      { icon: '💍', label: 'Jewelry',val: 'Kundan Set' },
+      { icon: '🧣', label: 'Dupatta',val: 'Cream Chiffon' }
+    ],
+    tip: "Ivory and gold is a timeless Eid combination. Embroidered khussa brings tradition while keeping the look elegant and fresh."
+  },
+  office: {
+    title: "Here's your office look ✨",
+    items: [
+      { icon: '👚', label: 'Top',     val: 'White Blouse' },
+      { icon: '👖', label: 'Trouser', val: 'Black Slim' },
+      { icon: '👜', label: 'Bag',     val: 'Tote · Tan' },
+      { icon: '👟', label: 'Flats',   val: 'Nude Pointed' }
+    ],
+    tip: "Classic black and white with a tan bag keeps the look polished and professional. Nude pointed flats elongate the silhouette."
+  },
+  brunch: {
+    title: "Here's your brunch look ✨",
+    items: [
+      { icon: '👗', label: 'Dress',  val: 'Floral Mini' },
+      { icon: '👡', label: 'Mules',  val: 'White Block' },
+      { icon: '👜', label: 'Bag',    val: 'Wicker Round' },
+      { icon: '🕶', label: 'Sunnies',val: 'Gold Oval' }
+    ],
+    tip: "A floral mini with white block mules is effortlessly chic for brunch. Wicker bag and gold sunglasses seal the summer vibe."
+  },
+  party: {
+    title: "Here's your party look ✨",
+    items: [
+      { icon: '👗', label: 'Dress', val: 'Black Bodycon' },
+      { icon: '👠', label: 'Heels', val: 'Silver Stiletto' },
+      { icon: '👛', label: 'Clutch',val: 'Silver Chain' },
+      { icon: '💍', label: 'Jewelry',val: 'Statement' }
+    ],
+    tip: "Black bodycon and silver accessories is the ultimate party formula. A statement necklace keeps all eyes on you."
+  }
+};
+
+function buildResultHTML(data) {
+  const itemsHTML = data.items.map((item, i) => `
+    ${i > 0 ? '<div class="result-plus">+</div>' : ''}
+    <div class="result-item">
+      <div class="result-item-icon">${item.icon}</div>
+      <div class="result-item-label">${item.label}</div>
+      <div class="result-item-val">${item.val}</div>
+    </div>
+  `).join('');
+  return itemsHTML;
+}
+
+document.getElementById('occChips').addEventListener('click', (e) => {
+  const btn = e.target.closest('.occ-chip');
+  if (!btn) return;
+  document.querySelectorAll('.occ-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const occ = btn.dataset.occ;
+  const data = outfits[occ];
+  if (!data) return;
+  const titleEl   = document.getElementById('resultTitle');
+  const itemsEl   = document.getElementById('resultItems');
+  const tipEl     = document.getElementById('stylingTip');
+  titleEl.style.opacity = '0';
+  itemsEl.style.opacity = '0';
+  tipEl.style.opacity   = '0';
+  setTimeout(() => {
+    titleEl.textContent = data.title;
+    itemsEl.innerHTML   = buildResultHTML(data);
+    tipEl.textContent   = data.tip;
+    titleEl.style.transition = 'opacity 0.3s ease';
+    itemsEl.style.transition = 'opacity 0.3s ease';
+    tipEl.style.transition   = 'opacity 0.3s ease';
+    titleEl.style.opacity = '1';
+    itemsEl.style.opacity = '1';
+    tipEl.style.opacity   = '1';
+  }, 180);
+});
+</script>
+</body>
+</html>

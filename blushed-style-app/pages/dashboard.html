@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blushed Style — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDFBF9;--bg2:#FFF0F5;--bg3:#FDF6F9;--white:#FFFFFF;
+  --pink:#E75480;--pink-soft:#F4A7BB;--pink-pale:#FDEEF4;--pink-deep:#C2185B;
+  --border:#F2C4D0;--text:#2D1B22;--muted:#8B5A6B;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --radius:14px;--radius-sm:8px;--radius-pill:40px;--trans:0.22s ease;
+  --sidebar:220px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg3);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar);min-height:100vh;
+  background:var(--white);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;z-index:50;
+  transition:transform var(--trans);
+}
+.sidebar-logo{
+  padding:24px 22px 20px;
+  border-bottom:1px solid var(--border);
+  font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--text);
+  text-decoration:none;display:block;
+}
+.sidebar-logo span{color:var(--pink)}
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{
+  font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);padding:10px 12px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:11px;
+  padding:10px 13px;border-radius:10px;
+  font-size:13px;font-weight:400;color:var(--muted);
+  text-decoration:none;cursor:pointer;
+  transition:all var(--trans);border:none;background:none;width:100%;text-align:left;
+}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--pink-pale);color:var(--pink);font-weight:500}
+.nav-item .nav-icon{font-size:16px;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;font-size:10px;font-weight:500;
+  background:var(--pink);color:#fff;
+  padding:2px 7px;border-radius:10px;
+}
+.sidebar-bottom{
+  padding:16px 10px;border-top:1px solid var(--border);
+}
+.user-card{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:10px;
+  transition:background var(--trans);cursor:pointer;
+}
+.user-card:hover{background:var(--bg2)}
+.user-av{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--pink);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;color:#fff;flex-shrink:0;
+}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-plan{font-size:10px;color:var(--muted)}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Topbar ── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:0 32px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:40;
+}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.hamburger-btn{
+  display:none;background:none;border:none;cursor:pointer;
+  padding:6px;border-radius:8px;
+  transition:background var(--trans);
+}
+.hamburger-btn:hover{background:var(--bg2)}
+.hamburger-btn span{display:block;width:18px;height:1.5px;background:var(--text);margin:4px 0;border-radius:2px}
+.topbar-greeting{font-family:var(--font-display);font-size:17px;font-weight:500;color:var(--text)}
+.topbar-date{font-size:12px;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-search{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-pill);padding:7px 16px;
+  font-size:13px;color:var(--muted);cursor:text;
+  transition:border-color var(--trans);
+}
+.topbar-search:hover{border-color:var(--pink-soft)}
+.topbar-icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;
+  transition:all var(--trans);
+}
+.topbar-icon-btn:hover{background:var(--pink-pale);border-color:var(--pink-soft)}
+.notif-wrap{position:relative}
+.notif-dot{
+  position:absolute;top:2px;right:2px;
+  width:8px;height:8px;background:var(--pink);border-radius:50%;
+  border:2px solid var(--white);
+}
+.topbar-av{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--pink);display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:500;color:#fff;cursor:pointer;
+  border:2px solid var(--border);transition:border-color var(--trans);
+}
+.topbar-av:hover{border-color:var(--pink)}
+
+/* ── Content ── */
+.content{padding:28px 32px;flex:1}
+
+/* ── Stats row ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.stat-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px 22px;
+  transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans);
+  cursor:default;
+}
+.stat-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(231,84,128,.09);border-color:var(--pink-soft)}
+.stat-icon{font-size:22px;margin-bottom:12px}
+.stat-num{font-family:var(--font-display);font-size:34px;font-weight:500;color:var(--text);line-height:1}
+.stat-label{font-size:12px;color:var(--muted);margin-top:4px}
+.stat-change{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:500;margin-top:8px;
+  padding:2px 8px;border-radius:10px;
+}
+.stat-change.up{background:#F0FFF1;color:#2E7D32}
+.stat-change.new{background:var(--pink-pale);color:var(--pink-deep)}
+
+/* ── Grid layout ── */
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px}
+
+/* ── Card ── */
+.card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px 24px;
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.card-title{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text)}
+.card-link{font-size:12px;color:var(--pink);text-decoration:none;font-weight:500;transition:color var(--trans)}
+.card-link:hover{color:var(--pink-deep)}
+.btn-sm{
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  padding:7px 16px;border-radius:var(--radius-pill);
+  background:var(--pink);color:#fff;border:none;cursor:pointer;
+  transition:background var(--trans),transform var(--trans);
+  text-decoration:none;display:inline-block;
+}
+.btn-sm:hover{background:var(--pink-deep);transform:translateY(-1px)}
+.btn-sm-outline{
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  padding:6px 14px;border-radius:var(--radius-pill);
+  background:transparent;color:var(--pink);
+  border:1px solid var(--border);cursor:pointer;
+  transition:all var(--trans);
+}
+.btn-sm-outline:hover{border-color:var(--pink-soft);background:var(--pink-pale)}
+
+/* ── Wardrobe mini grid ── */
+.wardrobe-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.witem{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 8px;text-align:center;
+  transition:all var(--trans);cursor:pointer;position:relative;overflow:hidden;
+}
+.witem:hover{border-color:var(--pink-soft);transform:translateY(-2px);box-shadow:0 6px 18px rgba(231,84,128,.10)}
+.witem-img{
+  width:52px;height:52px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin:0 auto 8px;
+}
+.witem-name{font-size:11px;font-weight:500;color:var(--text);margin-bottom:2px}
+.witem-sub{font-size:10px;color:var(--muted)}
+.witem-tag{
+  display:inline-block;font-size:9px;font-weight:500;
+  padding:2px 6px;border-radius:6px;
+  background:var(--pink-pale);color:var(--pink-deep);margin-top:4px;
+}
+
+/* ── Today's outfit ── */
+.outfit-of-day{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+}
+.ood-occasion{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;color:var(--pink-deep);
+  background:var(--pink-pale);border:1px solid var(--border);
+  padding:4px 12px;border-radius:var(--radius-pill);
+  margin-bottom:14px;
+}
+.ood-items{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.ood-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:8px;padding:8px 12px;
+}
+.ood-item-icon{font-size:18px;flex-shrink:0}
+.ood-item-info{flex:1}
+.ood-item-name{font-size:12px;font-weight:500;color:var(--text)}
+.ood-item-sub{font-size:10px;color:var(--muted)}
+.ood-tip{
+  font-size:12px;font-style:italic;color:var(--pink-deep);
+  padding:9px 12px;background:var(--pink-pale);
+  border-radius:8px;border-left:3px solid var(--pink-soft);
+  margin-bottom:14px;
+}
+
+/* ── Events list ── */
+.event-list{display:flex;flex-direction:column;gap:10px}
+.event-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg3);
+  transition:border-color var(--trans),transform var(--trans);cursor:pointer;
+}
+.event-item:hover{border-color:var(--pink-soft);transform:translateX(3px)}
+.event-date{
+  min-width:42px;text-align:center;
+  background:var(--pink-pale);border:1px solid var(--border);
+  border-radius:8px;padding:6px 4px;flex-shrink:0;
+}
+.event-day{font-size:18px;font-weight:500;color:var(--pink);font-family:var(--font-display);line-height:1}
+.event-mon{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.event-info{flex:1}
+.event-name{font-size:13px;font-weight:500;color:var(--text)}
+.event-occ{font-size:11px;color:var(--muted)}
+.event-outfit-tag{
+  font-size:10px;font-weight:500;
+  padding:3px 8px;border-radius:6px;
+  background:var(--pink-pale);color:var(--pink-deep);
+}
+
+/* ── Activity feed ── */
+.activity-list{display:flex;flex-direction:column;gap:0}
+.activity-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.activity-item:last-child{border-bottom:none}
+.activity-dot{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--pink-pale);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;margin-top:2px;
+}
+.activity-text{font-size:13px;color:var(--text);line-height:1.5}
+.activity-time{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ── Style tip card ── */
+.tip-card{
+  background:var(--pink);border-radius:var(--radius);
+  padding:22px 24px;color:#fff;position:relative;overflow:hidden;
+}
+.tip-card::before{
+  content:'✦';position:absolute;right:20px;top:16px;
+  font-size:48px;opacity:0.15;
+}
+.tip-tag{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;opacity:0.8;margin-bottom:10px}
+.tip-text-main{font-family:var(--font-display);font-size:18px;font-weight:500;line-height:1.35;margin-bottom:14px}
+.tip-text-main em{font-style:italic}
+
+/* ── Quick actions ── */
+.quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.qa-btn{
+  display:flex;align-items:center;gap:10px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 16px;
+  cursor:pointer;text-decoration:none;
+  transition:all var(--trans);
+}
+.qa-btn:hover{border-color:var(--pink-soft);background:var(--pink-pale);transform:translateY(-2px)}
+.qa-icon{font-size:20px;flex-shrink:0}
+.qa-label{font-size:13px;font-weight:500;color:var(--text)}
+.qa-sub{font-size:11px;color:var(--muted)}
+
+/* ── Animations ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.75)}}
+.fade-up{animation:fadeUp .55s ease both}
+.d1{animation-delay:.08s}.d2{animation-delay:.16s}.d3{animation-delay:.24s}
+.d4{animation-delay:.32s}.d5{animation-delay:.40s}
+
+/* ── Sidebar overlay (mobile) ── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:49;
+}
+.sidebar-overlay.show{display:block}
+
+/* ── Responsive ── */
+@media(max-width:1100px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-2{grid-template-columns:1fr}
+  .wardrobe-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger-btn{display:block}
+  .content{padding:20px 16px}
+  .topbar{padding:0 16px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:1fr}
+  .wardrobe-grid{grid-template-columns:repeat(2,1fr)}
+  .quick-actions{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .wardrobe-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sidebar-logo">Blushed<span>.</span>Style</a>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item active">
+      <span class="nav-icon">🏠</span> Dashboard
+    </a>
+    <a href="wardrobe.html" class="nav-item">
+      <span class="nav-icon">👗</span> My Wardrobe
+      <span class="nav-badge">63</span>
+    </a>
+    <a href="outfits.html" class="nav-item">
+      <span class="nav-icon">✨</span> Outfits
+    </a>
+    <a href="events.html" class="nav-item">
+      <span class="nav-icon">📅</span> Events
+      <span class="nav-badge">4</span>
+    </a>
+    <a href="favorites.html" class="nav-item">
+      <span class="nav-icon">♡</span> Favorites
+    </a>
+
+    <div class="nav-section-label" style="margin-top:8px">Account</div>
+    <a href="settings.html" class="nav-item">
+      <span class="nav-icon">⚙</span> Settings
+    </a>
+    <a href="auth.html" class="nav-item">
+      <span class="nav-icon">↩</span> Logout
+    </a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-av">S</div>
+      <div>
+        <div class="user-name">Sana Malik</div>
+        <div class="user-plan">Free plan · 63 items</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div>
+        <div class="topbar-greeting">Good morning, Sana ✨</div>
+        <div class="topbar-date" id="todayDate"></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        🔍 <span>Search wardrobe…</span>
+      </div>
+      <div class="notif-wrap">
+        <div class="topbar-icon-btn">🔔</div>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="topbar-av">S</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card fade-up">
+        <div class="stat-icon">👗</div>
+        <div class="stat-num" id="statItems">63</div>
+        <div class="stat-label">Wardrobe items</div>
+        <div class="stat-change new">+3 this week</div>
+      </div>
+      <div class="stat-card fade-up d1">
+        <div class="stat-icon">✨</div>
+        <div class="stat-num">18</div>
+        <div class="stat-label">Saved outfits</div>
+        <div class="stat-change up">↑ 5 new</div>
+      </div>
+      <div class="stat-card fade-up d2">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num">4</div>
+        <div class="stat-label">Upcoming events</div>
+        <div class="stat-change new">Next: 2 days</div>
+      </div>
+      <div class="stat-card fade-up d3">
+        <div class="stat-icon">💡</div>
+        <div class="stat-num">6</div>
+        <div class="stat-label">New suggestions</div>
+        <div class="stat-change up">↑ Fresh today</div>
+      </div>
+    </div>
+
+    <!-- Today's outfit + Events -->
+    <div class="grid-2 fade-up d2">
+
+      <!-- Today's outfit of the day -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Today's suggested look</div>
+          <a href="outfits.html" class="card-link">Regenerate →</a>
+        </div>
+        <div class="outfit-of-day">
+          <div class="ood-occasion">💼 Office day</div>
+          <div class="ood-items">
+            <div class="ood-item">
+              <div class="ood-item-icon">👚</div>
+              <div class="ood-item-info">
+                <div class="ood-item-name">White silk blouse</div>
+                <div class="ood-item-sub">Formal · Light</div>
+              </div>
+              <span style="font-size:10px;color:var(--muted)">✓ Matched</span>
+            </div>
+            <div class="ood-item">
+              <div class="ood-item-icon">👖</div>
+              <div class="ood-item-info">
+                <div class="ood-item-name">Black slim trousers</div>
+                <div class="ood-item-sub">Formal · Dark</div>
+              </div>
+              <span style="font-size:10px;color:var(--muted)">✓ Matched</span>
+            </div>
+            <div class="ood-item">
+              <div class="ood-item-icon">👜</div>
+              <div class="ood-item-info">
+                <div class="ood-item-name">Tan leather tote</div>
+                <div class="ood-item-sub">Bag · Structured</div>
+              </div>
+              <span style="font-size:10px;color:var(--muted)">✓ Matched</span>
+            </div>
+            <div class="ood-item">
+              <div class="ood-item-icon">👟</div>
+              <div class="ood-item-info">
+                <div class="ood-item-name">Nude pointed flats</div>
+                <div class="ood-item-sub">Shoes · Minimal</div>
+              </div>
+              <span style="font-size:10px;color:var(--muted)">✓ Matched</span>
+            </div>
+          </div>
+          <div class="ood-tip">Classic black and white with a tan accent — effortlessly polished for any office setting.</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm" style="flex:1" onclick="showToast('Outfit saved to favorites! ♡')">♡ Save look</button>
+            <button class="btn-sm-outline" onclick="location.href='outfits.html'">Try another</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming events -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Upcoming events</div>
+          <a href="#" class="btn-sm" style="font-size:11px">+ Add event</a>
+        </div>
+        <div class="event-list">
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">24</div>
+              <div class="event-mon">May</div>
+            </div>
+            <div class="event-info">
+              <div class="event-name">Cousin's wedding</div>
+              <div class="event-occ">💍 Wedding · Hall Asghar</div>
+            </div>
+            <span class="event-outfit-tag">Outfit saved</span>
+          </div>
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">27</div>
+              <div class="event-mon">May</div>
+            </div>
+            <div class="event-info">
+              <div class="event-name">Office team meeting</div>
+              <div class="event-occ">💼 Office · Presentation day</div>
+            </div>
+            <span class="event-outfit-tag">Outfit saved</span>
+          </div>
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">01</div>
+              <div class="event-mon">Jun</div>
+            </div>
+            <div class="event-info">
+              <div class="event-name">Eid celebration</div>
+              <div class="event-occ">🌙 Eid · Family gathering</div>
+            </div>
+            <span class="event-outfit-tag" style="background:var(--bg3);color:var(--muted)">No outfit yet</span>
+          </div>
+          <div class="event-item">
+            <div class="event-date">
+              <div class="event-day">05</div>
+              <div class="event-mon">Jun</div>
+            </div>
+            <div class="event-info">
+              <div class="event-name">Brunch with friends</div>
+              <div class="event-occ">☕ Brunch · Café Zara</div>
+            </div>
+            <span class="event-outfit-tag" style="background:var(--bg3);color:var(--muted)">No outfit yet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent wardrobe -->
+    <div class="card fade-up d3" style="margin-bottom:20px">
+      <div class="card-header">
+        <div class="card-title">Recent wardrobe items</div>
+        <a href="wardrobe.html" class="card-link">View all →</a>
+      </div>
+      <div class="wardrobe-grid">
+        <div class="witem">
+          <div class="witem-img">👗</div>
+          <div class="witem-name">Blush maxi dress</div>
+          <div class="witem-sub">Pink · Formal</div>
+          <span class="witem-tag">Wedding</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">👠</div>
+          <div class="witem-name">Nude strappy heels</div>
+          <div class="witem-sub">Nude · 3"</div>
+          <span class="witem-tag">Wedding</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">💍</div>
+          <div class="witem-name">Rose gold set</div>
+          <div class="witem-sub">Gold · Statement</div>
+          <span class="witem-tag">Special</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">🥻</div>
+          <div class="witem-name">Ivory embroidered kameez</div>
+          <div class="witem-sub">Ivory · Traditional</div>
+          <span class="witem-tag">Eid</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">👛</div>
+          <div class="witem-name">Gold mini clutch</div>
+          <div class="witem-sub">Gold · Evening</div>
+          <span class="witem-tag">Party</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">🧣</div>
+          <div class="witem-name">Cream chiffon dupatta</div>
+          <div class="witem-sub">Cream · Light</div>
+          <span class="witem-tag">Eid</span>
+        </div>
+        <div class="witem">
+          <div class="witem-img">👚</div>
+          <div class="witem-name">White silk blouse</div>
+          <div class="witem-sub">White · Formal</div>
+          <span class="witem-tag">Office</span>
+        </div>
+        <div class="witem" onclick="location.href='wardrobe.html'" style="cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--pink-pale);border:1.5px dashed var(--pink-soft)">
+          <div style="font-size:28px;margin-bottom:6px">+</div>
+          <div class="witem-name" style="color:var(--pink)">Add clothes</div>
+          <div class="witem-sub">Upload new item</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row -->
+    <div class="grid-3 fade-up d4">
+
+      <!-- Quick actions -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Quick actions</div>
+        </div>
+        <div class="quick-actions">
+          <a href="wardrobe.html" class="qa-btn">
+            <span class="qa-icon">📸</span>
+            <div><div class="qa-label">Upload clothes</div><div class="qa-sub">Add to wardrobe</div></div>
+          </a>
+          <a href="outfits.html" class="qa-btn">
+            <span class="qa-icon">✨</span>
+            <div><div class="qa-label">Get outfit idea</div><div class="qa-sub">AI stylist</div></div>
+          </a>
+          <a href="#" class="qa-btn">
+            <span class="qa-icon">📅</span>
+            <div><div class="qa-label">Add event</div><div class="qa-sub">Plan your look</div></div>
+          </a>
+          <a href="#" class="qa-btn">
+            <span class="qa-icon">♡</span>
+            <div><div class="qa-label">View favorites</div><div class="qa-sub">Saved looks</div></div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Style tip -->
+      <div class="tip-card fade-up d3">
+        <div class="tip-tag">✦ Style tip of the day</div>
+        <div class="tip-text-main">"Neutral tones are your <em>best friend</em> — they pair with everything in your wardrobe."</div>
+        <div style="font-size:12px;opacity:.8;margin-bottom:14px">Beige, ivory, and nude shades create the most versatile outfits from fewer pieces.</div>
+        <button class="btn-sm" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3)" onclick="nextTip()">Next tip →</button>
+      </div>
+
+      <!-- Activity -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent activity</div>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot">📸</div>
+            <div>
+              <div class="activity-text">Added <strong>ivory kameez</strong> to wardrobe</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot">✨</div>
+            <div>
+              <div class="activity-text">Saved <strong>Wedding look #3</strong> to favorites</div>
+              <div class="activity-time">Yesterday</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot">📅</div>
+            <div>
+              <div class="activity-text">Added event: <strong>Eid celebration</strong></div>
+              <div class="activity-time">2 days ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot">📸</div>
+            <div>
+              <div class="activity-text">Added <strong>3 new items</strong> to wardrobe</div>
+              <div class="activity-time">3 days ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot">✨</div>
+            <div>
+              <div class="activity-text">Generated <strong>Brunch outfit</strong> suggestion</div>
+              <div class="activity-time">4 days ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(231,84,128,.12);transform:translateY(20px);opacity:0;transition:all .35s ease;z-index:200;pointer-events:none;max-width:300px"></div>
+
+<script>
+/* Date */
+const d = new Date();
+document.getElementById('todayDate').textContent = d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+
+/* Sidebar toggle */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+/* Toast */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.transform='translateY(0)';t.style.opacity='1';t.style.pointerEvents='auto';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>{t.style.transform='translateY(20px)';t.style.opacity='0';t.style.pointerEvents='none';},2800);
+}
+
+/* Tips */
+const tips=[
+  '"Neutral tones are your best friend — they pair with everything in your wardrobe."',
+  '"Invest in one statement piece per outfit — let everything else support it."',
+  '"A good bag can elevate any outfit instantly — it\'s always worth it."',
+  '"Match your metals — gold jewelry with warm tones, silver with cool tones."',
+  '"The best outfit is the one that makes you feel most like yourself."'
+];
+let tipIdx=0;
+function nextTip(){
+  tipIdx=(tipIdx+1)%tips.length;
+  document.querySelector('.tip-text-main').innerHTML=tips[tipIdx].replace(/\*(.*?)\*/g,'<em>$1</em>');
+  showToast('New style tip loaded ✨');
+}
+
+/* Animate stat numbers */
+function animateNum(el,target){
+  let n=0;const step=Math.ceil(target/40);
+  const iv=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n;if(n>=target)clearInterval(iv);},30);
+}
+window.addEventListener('load',()=>{
+  animateNum(document.getElementById('statItems'),63);
+});
+</script>
+<script src="../assets/js/api.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+
+  // Load user name
+  const user = getUser();
+  if (user) {
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const greetEl = document.querySelector('.topbar-greeting');
+    if (greetEl) greetEl.textContent = `${greeting}, ${user.first_name} ✨`;
+    loadUserUI();
+  }
+
+  // Load real data from backend
+  try {
+    const [statsData, outfitsData, eventsData] = await Promise.all([
+      Wardrobe.getStats(),
+      Outfits.getSaved(),
+      Events.getUpcoming(),
+    ]);
+
+    // Update stat cards
+    const totalEl = document.getElementById('statItems');
+    if (totalEl) animateNumber('statItems', statsData.stats.total);
+
+    const savedCountEl = document.querySelector('.stat-num:nth-of-type(2)');
+
+    // Populate recent wardrobe items
+    const grid = document.getElementById('wardrobeGrid') || document.querySelector('.wardrobe-grid');
+    if (grid && statsData.stats.recent_items?.length) {
+      const items = statsData.stats.recent_items;
+      const categoryIcons = {
+        dress:'👗', top:'👚', shirt:'👔', blouse:'👚', trouser:'👖', jeans:'👖',
+        shoes:'👟', heels:'👠', sandals:'👡', khussa:'👟', bag:'👜', clutch:'👛',
+        jewelry:'💍', watch:'⌚', dupatta:'🧣', kameez:'🥻', kurta:'🥻', jacket:'🧥',
+      };
+      const existingCards = grid.querySelectorAll('.witem:not([onclick*="wardrobe"])');
+      existingCards.forEach((c, i) => {
+        if (items[i]) {
+          const cat = items[i].category?.toLowerCase() || '';
+          const icon = Object.entries(categoryIcons).find(([k]) => cat.includes(k))?.[1] || '👗';
+          const imgEl = c.querySelector('.witem-img');
+          if (imgEl) {
+            if (items[i].image_url) {
+              imgEl.innerHTML = `<img src="${items[i].image_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px" alt="${items[i].name||'item'}"/>`;
+            } else {
+              imgEl.textContent = icon;
+            }
+          }
+          const nameEl = c.querySelector('.witem-name');
+          if (nameEl) nameEl.textContent = items[i].name || items[i].category;
+          const subEl  = c.querySelector('.witem-sub');
+          if (subEl)  subEl.textContent  = `${items[i].color || ''} · ${items[i].style || ''}`.replace('· ','').replace(' ·','');
+        }
+      });
+    }
+  } catch(err) {
+    console.log('Dashboard data load:', err.message);
+  }
+});
+</script>
+
+</body>
+</html>

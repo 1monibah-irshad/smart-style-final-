@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blushed Style — Outfit Recommendations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDFBF9;--bg2:#FFF0F5;--bg3:#FDF6F9;--white:#FFFFFF;
+  --pink:#E75480;--pink-soft:#F4A7BB;--pink-pale:#FDEEF4;--pink-deep:#C2185B;
+  --border:#F2C4D0;--text:#2D1B22;--muted:#8B5A6B;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --radius:14px;--radius-sm:8px;--radius-pill:40px;--trans:0.22s ease;
+  --sidebar:220px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg3);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:50;transition:transform var(--trans)}
+.sidebar-logo{padding:24px 22px 20px;border-bottom:1px solid var(--border);font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--text);text-decoration:none;display:block}
+.sidebar-logo span{color:var(--pink)}
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:13px;font-weight:400;color:var(--muted);text-decoration:none;cursor:pointer;transition:all var(--trans);border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--pink-pale);color:var(--pink);font-weight:500}
+.nav-icon{font-size:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:500;background:var(--pink);color:#fff;padding:2px 7px;border-radius:10px}
+.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;transition:background var(--trans);cursor:pointer}
+.user-card:hover{background:var(--bg2)}
+.user-av{width:34px;height:34px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-plan{font-size:10px;color:var(--muted)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:49}
+.sidebar-overlay.show{display:block}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px}
+.hamburger-btn span{display:block;width:18px;height:1.5px;background:var(--text);margin:4px 0;border-radius:2px}
+.page-title{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--text)}
+.topbar-av{width:36px;height:36px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:2px solid var(--border)}
+
+/* ── Content ── */
+.content{padding:28px 32px;flex:1}
+.content-grid{display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+
+/* ── Occasion picker panel ── */
+.picker-panel{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:sticky;top:88px}
+.panel-h{font-family:var(--font-display);font-size:22px;font-weight:500;margin-bottom:6px;color:var(--text)}
+.panel-p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.occ-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.occ-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:14px 8px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--bg3);
+  cursor:pointer;transition:all var(--trans);
+}
+.occ-btn:hover{border-color:var(--pink-soft);background:var(--pink-pale);transform:translateY(-2px)}
+.occ-btn.active{border-color:var(--pink);background:var(--pink);transform:translateY(-2px)}
+.occ-emoji{font-size:22px;margin-bottom:6px}
+.occ-label{font-size:11px;font-weight:500;color:var(--text);transition:color var(--trans)}
+.occ-btn.active .occ-label{color:#fff}
+.occ-btn.active .occ-emoji{filter:brightness(0) invert(1)}
+
+.generate-btn{
+  width:100%;height:50px;
+  font-family:var(--font-body);font-size:14px;font-weight:500;
+  background:var(--pink);color:#fff;border:none;
+  border-radius:var(--radius-pill);cursor:pointer;
+  transition:all var(--trans);display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:14px;position:relative;overflow:hidden;
+}
+.generate-btn:hover{background:var(--pink-deep);transform:translateY(-1px);box-shadow:0 6px 24px rgba(231,84,128,.30)}
+.generate-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.gen-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.generate-btn.loading .gen-spinner{display:block}
+.generate-btn.loading .gen-text{display:none}
+
+.saved-count{text-align:center;font-size:12px;color:var(--muted)}
+.saved-count span{color:var(--pink);font-weight:500}
+
+/* ── Results panel ── */
+.results-panel{}
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.results-h{font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--text)}
+.results-h em{font-style:italic;color:var(--pink)}
+.results-sub{font-size:13px;color:var(--muted)}
+
+/* Outfit cards */
+.outfit-cards{display:flex;flex-direction:column;gap:16px}
+.outfit-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans);
+}
+.outfit-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(231,84,128,.10);border-color:var(--pink-soft)}
+.outfit-card.featured{border-color:var(--pink);border-width:1.5px}
+.outfit-card-header{
+  background:var(--bg2);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.oc-num{font-size:11px;font-weight:500;color:var(--muted)}
+.oc-badge{
+  font-size:10px;font-weight:500;
+  padding:3px 10px;border-radius:10px;
+  background:var(--pink-pale);color:var(--pink-deep);
+}
+.oc-badge.best{background:var(--pink);color:#fff}
+.outfit-card-body{padding:20px}
+.outfit-items-row{
+  display:flex;align-items:center;gap:8px;
+  flex-wrap:wrap;margin-bottom:14px;
+}
+.oi{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:10px;padding:12px 14px;min-width:72px;text-align:center;
+  transition:border-color var(--trans),transform var(--trans);
+}
+.oi:hover{border-color:var(--pink-soft);transform:translateY(-2px)}
+.oi-icon{font-size:26px;margin-bottom:4px}
+.oi-cat{font-size:9px;color:var(--muted)}
+.oi-val{font-size:11px;font-weight:500;color:var(--text)}
+.oi-plus{font-size:18px;color:var(--pink-soft);flex-shrink:0}
+.outfit-tip{
+  font-size:13px;font-style:italic;color:var(--pink-deep);
+  padding:10px 14px;background:var(--pink-pale);
+  border-radius:8px;border-left:3px solid var(--pink-soft);
+  margin-bottom:14px;line-height:1.55;
+}
+.outfit-score{
+  display:flex;align-items:center;gap:6px;margin-bottom:14px;
+}
+.score-label{font-size:11px;color:var(--muted)}
+.score-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.score-fill{height:100%;background:var(--pink);border-radius:2px;transition:width .6s ease}
+.score-num{font-size:11px;font-weight:500;color:var(--pink)}
+.outfit-actions{display:flex;gap:8px}
+.btn-save{
+  flex:1;height:40px;font-family:var(--font-body);font-size:12px;font-weight:500;
+  background:var(--pink);color:#fff;border:none;border-radius:var(--radius-pill);
+  cursor:pointer;transition:all var(--trans);display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.btn-save:hover{background:var(--pink-deep)}
+.btn-save.saved{background:var(--success-bg,#F0FFF1);color:#2E7D32;border:1px solid #A5D6A7}
+.btn-share{
+  height:40px;width:40px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;transition:all var(--trans);
+}
+.btn-share:hover{background:var(--pink-pale);border-color:var(--pink-soft)}
+.btn-try-another{
+  height:40px;padding:0 18px;font-family:var(--font-body);font-size:12px;
+  background:transparent;color:var(--pink);
+  border:1px solid var(--border);border-radius:var(--radius-pill);
+  cursor:pointer;transition:all var(--trans);
+}
+.btn-try-another:hover{border-color:var(--pink-soft);background:var(--pink-pale)}
+
+/* Empty state */
+.empty-state{
+  text-align:center;padding:60px 24px;
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);
+}
+.empty-icon{font-size:52px;margin-bottom:16px}
+.empty-h{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:8px;color:var(--text)}
+.empty-p{font-size:14px;color:var(--muted);line-height:1.65;max-width:320px;margin:0 auto 24px}
+
+/* Loading skeleton */
+.skeleton-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  display:none;
+}
+.skeleton-card.show{display:block}
+.skel{
+  background:linear-gradient(90deg,var(--bg2) 25%,var(--pink-pale) 50%,var(--bg2) 75%);
+  background-size:400px 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:6px;
+}
+.skel-h{height:20px;width:60%;margin-bottom:16px}
+.skel-row{display:flex;gap:8px;margin-bottom:16px}
+.skel-item{height:80px;flex:1;border-radius:10px}
+.skel-tip{height:40px;margin-bottom:12px}
+.skel-btn{height:36px;border-radius:var(--radius-pill)}
+
+/* Saved outfits section */
+.saved-section{margin-top:32px}
+.saved-h{font-family:var(--font-display);font-size:22px;font-weight:500;margin-bottom:14px;color:var(--text)}
+.saved-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.saved-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  transition:all var(--trans);cursor:pointer;
+}
+.saved-card:hover{border-color:var(--pink-soft);transform:translateY(-2px);box-shadow:0 8px 24px rgba(231,84,128,.09)}
+.saved-occ{font-size:11px;font-weight:500;color:var(--pink-deep);margin-bottom:8px}
+.saved-items-row{display:flex;gap:4px;margin-bottom:8px}
+.saved-item-mini{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.saved-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.saved-date{font-size:10px;color:var(--muted)}
+.saved-wear-btn{
+  width:100%;margin-top:10px;padding:7px 0;
+  font-family:var(--font-body);font-size:11px;font-weight:500;
+  background:var(--pink-pale);color:var(--pink-deep);
+  border:1px solid var(--border);border-radius:var(--radius-pill);
+  cursor:pointer;transition:all var(--trans);
+}
+.saved-wear-btn:hover{background:var(--pink);color:#fff;border-color:var(--pink)}
+
+/* ── Animations ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.85)}60%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+.fade-up{animation:fadeUp .5s ease both}
+.bounce-in{animation:bounceIn .45s ease both}
+
+/* ── Responsive ── */
+@media(max-width:900px){
+  .content-grid{grid-template-columns:1fr}
+  .picker-panel{position:static}
+  .saved-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger-btn{display:block}
+  .content{padding:16px}
+  .topbar{padding:0 16px}
+  .occ-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:480px){
+  .outfit-items-row{gap:5px}
+  .oi{min-width:58px;padding:8px 6px}
+  .occ-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sidebar-logo">Blushed<span>.</span>Style</a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="wardrobe.html" class="nav-item"><span class="nav-icon">👗</span> My Wardrobe<span class="nav-badge">8</span></a>
+    <a href="outfits.html" class="nav-item active"><span class="nav-icon">✨</span> Outfits</a>
+    <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events<span class="nav-badge">4</span></a>
+    <a href="favorites.html" class="nav-item"><span class="nav-icon">♡</span> Favorites</a>
+    <div class="nav-section-label" style="margin-top:8px">Account</div>
+    <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span> Settings</a>
+    <a href="auth.html" class="nav-item"><span class="nav-icon">↩</span> Logout</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-av">S</div>
+      <div><div class="user-name">Sana Malik</div><div class="user-plan">Free plan · 8 items</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="page-title">AI Outfit Stylist</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:12px;color:var(--muted)"><span style="color:var(--pink);font-weight:500" id="savedCountTop">3</span> looks saved</span>
+      <div class="topbar-av">S</div>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="content-grid">
+
+      <!-- Occasion picker -->
+      <div class="picker-panel">
+        <div class="panel-h">What's the occasion?</div>
+        <div class="panel-p">Pick where you're going and we'll build the perfect look from your wardrobe.</div>
+
+        <div class="occ-grid" id="occGrid">
+          <div class="occ-btn" data-occ="wedding" onclick="selectOcc(this)">
+            <div class="occ-emoji">💍</div><div class="occ-label">Wedding</div>
+          </div>
+          <div class="occ-btn" data-occ="eid" onclick="selectOcc(this)">
+            <div class="occ-emoji">🌙</div><div class="occ-label">Eid</div>
+          </div>
+          <div class="occ-btn" data-occ="office" onclick="selectOcc(this)">
+            <div class="occ-emoji">💼</div><div class="occ-label">Office</div>
+          </div>
+          <div class="occ-btn" data-occ="university" onclick="selectOcc(this)">
+            <div class="occ-emoji">🎓</div><div class="occ-label">University</div>
+          </div>
+          <div class="occ-btn" data-occ="brunch" onclick="selectOcc(this)">
+            <div class="occ-emoji">☕</div><div class="occ-label">Brunch</div>
+          </div>
+          <div class="occ-btn" data-occ="dinner" onclick="selectOcc(this)">
+            <div class="occ-emoji">🍽</div><div class="occ-label">Dinner</div>
+          </div>
+          <div class="occ-btn" data-occ="party" onclick="selectOcc(this)">
+            <div class="occ-emoji">🎉</div><div class="occ-label">Party</div>
+          </div>
+          <div class="occ-btn" data-occ="vacation" onclick="selectOcc(this)">
+            <div class="occ-emoji">✈️</div><div class="occ-label">Vacation</div>
+          </div>
+        </div>
+
+        <button class="generate-btn" id="genBtn" onclick="generateOutfits()" disabled>
+          <span class="gen-text">✦ Generate my outfits</span>
+          <div class="gen-spinner"></div>
+        </button>
+        <div class="saved-count">You have <span id="savedCount">3</span> saved looks</div>
+      </div>
+
+      <!-- Results -->
+      <div class="results-panel" id="resultsPanel">
+
+        <!-- Empty state (default) -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">✨</div>
+          <div class="empty-h">Your outfits await</div>
+          <div class="empty-p">Pick an occasion on the left and tap "Generate my outfits" — we'll style you from your own wardrobe in seconds.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center">
+            <span style="font-size:12px;padding:5px 14px;border-radius:var(--radius-pill);background:var(--pink-pale);color:var(--pink-deep);border:1px solid var(--border)">💍 Wedding looks</span>
+            <span style="font-size:12px;padding:5px 14px;border-radius:var(--radius-pill);background:var(--pink-pale);color:var(--pink-deep);border:1px solid var(--border)">🌙 Eid outfits</span>
+            <span style="font-size:12px;padding:5px 14px;border-radius:var(--radius-pill);background:var(--pink-pale);color:var(--pink-deep);border:1px solid var(--border)">💼 Office style</span>
+          </div>
+        </div>
+
+        <!-- Skeleton loader -->
+        <div class="skeleton-card" id="skeleton">
+          <div class="skel skel-h"></div>
+          <div class="skel-row">
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+            <div class="skel skel-item"></div>
+          </div>
+          <div class="skel skel-tip"></div>
+          <div class="skel skel-btn"></div>
+        </div>
+
+        <!-- Generated outfit cards -->
+        <div id="outfitCards" style="display:none">
+          <div class="results-header">
+            <div>
+              <div class="results-h" id="resultsTitle">Your <em>wedding</em> looks</div>
+              <div class="results-sub" id="resultsSub">3 outfit combinations from your wardrobe</div>
+            </div>
+            <button onclick="generateOutfits()" style="font-family:var(--font-body);font-size:12px;padding:8px 18px;background:transparent;color:var(--pink);border:1px solid var(--border);border-radius:var(--radius-pill);cursor:pointer;transition:all var(--trans)" onmouseover="this.style.background='var(--pink-pale)'" onmouseout="this.style.background='transparent'">🔄 Regenerate</button>
+          </div>
+          <div class="outfit-cards" id="outfitCardsList"></div>
+        </div>
+
+        <!-- Saved outfits -->
+        <div class="saved-section" id="savedSection">
+          <div class="saved-h">Your saved looks ♡</div>
+          <div class="saved-grid" id="savedGrid">
+            <div class="saved-card">
+              <div class="saved-occ">💍 Wedding</div>
+              <div class="saved-items-row">
+                <div class="saved-item-mini">🥻</div>
+                <div class="saved-item-mini">👠</div>
+                <div class="saved-item-mini">💍</div>
+                <div class="saved-item-mini">🧣</div>
+              </div>
+              <div class="saved-name">Ivory wedding look</div>
+              <div class="saved-date">Saved 2 days ago</div>
+              <button class="saved-wear-btn">Wear this look →</button>
+            </div>
+            <div class="saved-card">
+              <div class="saved-occ">💼 Office</div>
+              <div class="saved-items-row">
+                <div class="saved-item-mini">👚</div>
+                <div class="saved-item-mini">👖</div>
+                <div class="saved-item-mini">👜</div>
+                <div class="saved-item-mini">👟</div>
+              </div>
+              <div class="saved-name">Classic office combo</div>
+              <div class="saved-date">Saved 5 days ago</div>
+              <button class="saved-wear-btn">Wear this look →</button>
+            </div>
+            <div class="saved-card">
+              <div class="saved-occ">🌙 Eid</div>
+              <div class="saved-items-row">
+                <div class="saved-item-mini">🥻</div>
+                <div class="saved-item-mini">👟</div>
+                <div class="saved-item-mini">💍</div>
+                <div class="saved-item-mini">🧣</div>
+              </div>
+              <div class="saved-name">Festive Eid look</div>
+              <div class="saved-date">Saved 1 week ago</div>
+              <button class="saved-wear-btn">Wear this look →</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="position:fixed;bottom:24px;right:24px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(231,84,128,.12);transform:translateY(20px);opacity:0;transition:all .35s ease;z-index:200;pointer-events:none;max-width:300px"></div>
+
+<script>
+const outfitData = {
+  wedding:{
+    title:'Your <em>wedding</em> looks',sub:'3 combinations from your wardrobe',
+    outfits:[
+      {badge:'Best match',score:92,items:[{i:'🥻',c:'Kameez',v:'Ivory Emb.'},{i:'👠',c:'Heels',v:'Gold Strappy'},{i:'💍',c:'Jewelry',v:'Kundan Set'},{i:'🧣',c:'Dupatta',v:'Cream Chiffon'}],tip:'Ivory and gold is a timeless bridal guest combination. Kundan jewelry elevates the traditional look perfectly.'},
+      {badge:'Elegant',score:85,items:[{i:'👗',c:'Dress',v:'Blush Maxi'},{i:'👠',c:'Heels',v:'Nude Strappy'},{i:'💍',c:'Jewelry',v:'Rose Gold'},{i:'👛',c:'Clutch',v:'Gold Mini'}],tip:'Soft blush and rose gold create a dreamy, feminine wedding guest look that photographs beautifully.'},
+      {badge:'Modern',score:78,items:[{i:'👗',c:'Dress',v:'Pink Midi'},{i:'👡',c:'Mules',v:'Beige Block'},{i:'💍',c:'Earrings',v:'Pearl Drop'},{i:'👜',c:'Bag',v:'Woven Tan'}],tip:'A contemporary take — pearl earrings and a woven bag keep it fresh without losing elegance.'}
+    ]
+  },
+  eid:{
+    title:'Your <em>Eid</em> looks',sub:'3 festive combinations ready to wear',
+    outfits:[
+      {badge:'Best match',score:95,items:[{i:'🥻',c:'Kameez',v:'Ivory Emb.'},{i:'👟',c:'Khussa',v:'Gold Emb.'},{i:'💍',c:'Jewelry',v:'Kundan Set'},{i:'🧣',c:'Dupatta',v:'Cream Chiffon'}],tip:'Ivory with gold embroidery is the ultimate Eid palette. Embroidered khussa adds the perfect traditional finishing touch.'},
+      {badge:'Festive',score:88,items:[{i:'🥻',c:'Kurta',v:'Dusty Rose'},{i:'👟',c:'Sandals',v:'Champagne'},{i:'💍',c:'Jewelry',v:'Rose Gold'},{i:'🧣',c:'Dupatta',v:'Blush'}],tip:'Dusty rose and blush tones are beautifully soft for Eid. Rose gold jewelry ties the warm palette together.'},
+      {badge:'Contemporary',score:80,items:[{i:'👗',c:'Dress',v:'Mint Maxi'},{i:'👠',c:'Heels',v:'Nude Strappy'},{i:'💍',c:'Jewelry',v:'Silver'},{i:'👛',c:'Clutch',v:'Silver Chain'}],tip:'A modern Eid look — pastel maxi with silver accessories for girls who want a contemporary festive feel.'}
+    ]
+  },
+  office:{
+    title:'Your <em>office</em> looks',sub:'3 professional combinations from your wardrobe',
+    outfits:[
+      {badge:'Best match',score:94,items:[{i:'👚',c:'Blouse',v:'White Silk'},{i:'👖',c:'Trousers',v:'Black Slim'},{i:'👜',c:'Bag',v:'Tan Tote'},{i:'👟',c:'Flats',v:'Nude Pointed'}],tip:'Classic black and white with a tan bag — the most reliable, polished office formula. Nude pointed flats elongate the look.'},
+      {badge:'Smart',score:86,items:[{i:'👗',c:'Dress',v:'Navy Midi'},{i:'👠',c:'Heels',v:'Nude Block'},{i:'💍',c:'Watch',v:'Gold Slim'},{i:'👜',c:'Bag',v:'Black Structured'}],tip:'A navy midi dress reads authoritative and elegant. Gold watch adds personality without being distracting.'},
+      {badge:'Casual Fridays',score:76,items:[{i:'👚',c:'Top',v:'Cream Knit'},{i:'👖',c:'Jeans',v:'Dark Straight'},{i:'👟',c:'Loafers',v:'Brown'},{i:'👛',c:'Bag',v:'Mini Saddle'}],tip:'Smart casual done right — cream and dark denim with brown loafers is effortlessly put-together for relaxed office days.'}
+    ]
+  },
+  university:{
+    title:'Your <em>university</em> looks',sub:'3 campus-ready combinations',
+    outfits:[
+      {badge:'Best match',score:90,items:[{i:'👚',c:'Top',v:'White Graphic'},{i:'👖',c:'Jeans',v:'Blue Straight'},{i:'👟',c:'Sneakers',v:'White Clean'},{i:'🎒',c:'Backpack',v:'Black'}],tip:'White tee and straight jeans with clean sneakers is the timeless campus look — always fresh, always effortless.'},
+      {badge:'Chic',score:83,items:[{i:'👗',c:'Dress',v:'Floral Mini'},{i:'👟',c:'Trainers',v:'White'},{i:'🎒',c:'Bag',v:'Canvas Tote'},{i:'💍',c:'Jewelry',v:'Dainty Gold'}],tip:'A floral mini with trainers looks intentionally stylish — like you put in effort without trying. Dainty gold keeps it elevated.'},
+      {badge:'Cozy',score:75,items:[{i:'🧥',c:'Hoodie',v:'Beige Oversized'},{i:'👖',c:'Leggings',v:'Black'},{i:'👟',c:'Sneakers',v:'White'},{i:'👜',c:'Bag',v:'Crossbody Tan'}],tip:'Oversized beige hoodie over black leggings is the comfort-first campus staple. A tan crossbody adds the style lift.'}
+    ]
+  },
+  brunch:{
+    title:'Your <em>brunch</em> looks',sub:'3 weekend-ready combinations',
+    outfits:[
+      {badge:'Best match',score:91,items:[{i:'👗',c:'Dress',v:'Floral Midi'},{i:'👡',c:'Mules',v:'White Block'},{i:'👜',c:'Bag',v:'Wicker Round'},{i:'🕶',c:'Sunnies',v:'Gold Oval'}],tip:'A floral midi with white block mules and a wicker bag is the quintessential brunch aesthetic — effortlessly chic.'},
+      {badge:'Fresh',score:84,items:[{i:'👚',c:'Top',v:'Lemon Linen'},{i:'👖',c:'Pants',v:'White Wide-leg'},{i:'👡',c:'Sandals',v:'Tan Strappy'},{i:'👛',c:'Bag',v:'Straw Mini'}],tip:'Lemon and white is a fresh summer brunch palette. Wide-leg pants elevate the silhouette beautifully.'},
+      {badge:'Cute & Cool',score:78,items:[{i:'👗',c:'Dress',v:'Pink Wrap'},{i:'👟',c:'Sneakers',v:'White Clean'},{i:'💍',c:'Jewelry',v:'Dainty Gold'},{i:'👜',c:'Bag',v:'Mini Shoulder'}],tip:'A wrap dress with sneakers hits the sweet spot between dressed-up and casual — perfect for a casual brunch vibe.'}
+    ]
+  },
+  dinner:{
+    title:'Your <em>dinner</em> looks',sub:'3 evening-ready combinations',
+    outfits:[
+      {badge:'Best match',score:93,items:[{i:'👗',c:'Dress',v:'Black Slip'},{i:'👠',c:'Heels',v:'Strappy Gold'},{i:'👛',c:'Clutch',v:'Gold Chain'},{i:'💍',c:'Jewelry',v:'Statement'}],tip:'A black slip dress with gold accessories is the most elevated dinner look — sophisticated and timeless.'},
+      {badge:'Romantic',score:87,items:[{i:'👗',c:'Dress',v:'Dusty Rose'},{i:'👠',c:'Heels',v:'Nude Pointed'},{i:'💍',c:'Jewelry',v:'Pearl Drop'},{i:'👜',c:'Bag',v:'Satin Clutch'}],tip:'Dusty rose is perfect for romantic dinner settings. Pearl earrings keep it soft and feminine.'},
+      {badge:'Elegant',score:80,items:[{i:'👚',c:'Blouse',v:'Satin Navy'},{i:'👖',c:'Trousers',v:'Black Wide'},{i:'👠',c:'Heels',v:'Stiletto Nude'},{i:'💍',c:'Watch',v:'Rose Gold'}],tip:'Navy satin blouse with wide-leg black trousers reads instantly elegant for dinner. The silhouette is everything here.'}
+    ]
+  },
+  party:{
+    title:'Your <em>party</em> looks',sub:'3 standout combinations',
+    outfits:[
+      {badge:'Best match',score:96,items:[{i:'👗',c:'Dress',v:'Black Mini'},{i:'👠',c:'Heels',v:'Silver Stiletto'},{i:'👛',c:'Clutch',v:'Silver Chain'},{i:'💍',c:'Jewelry',v:'Statement'}],tip:'Black mini with silver stilettos and a chain clutch — the definitive party formula. Statement jewelry seals the look.'},
+      {badge:'Bold',score:88,items:[{i:'👗',c:'Dress',v:'Red Bodycon'},{i:'👠',c:'Heels',v:'Black Strappy'},{i:'👛',c:'Clutch',v:'Gold Mini'},{i:'💍',c:'Jewelry',v:'Gold Drop'}],tip:'Red and black is fearless and striking. Gold drop earrings add warmth to the high-contrast look.'},
+      {badge:'Glam',score:81,items:[{i:'👗',c:'Top',v:'Sequin Silver'},{i:'👖',c:'Pants',v:'Black Satin'},{i:'👠',c:'Heels',v:'Black Pointed'},{i:'👛',c:'Clutch',v:'Black Mini'}],tip:'A sequin top with satin pants is sleek party dressing — all the glam, none of the effort. Let the top do the talking.'}
+    ]
+  },
+  vacation:{
+    title:'Your <em>vacation</em> looks',sub:'3 travel-ready combinations',
+    outfits:[
+      {badge:'Best match',score:89,items:[{i:'👗',c:'Dress',v:'Floral Maxi'},{i:'👡',c:'Sandals',v:'Tan Flat'},{i:'👜',c:'Bag',v:'Straw Tote'},{i:'🕶',c:'Sunnies',v:'Tortoiseshell'}],tip:'A floral maxi with flat sandals is the perfect vacation dress — comfortable, stylish, and packs beautifully.'},
+      {badge:'Resort',score:82,items:[{i:'👚',c:'Crop Top',v:'White Cotton'},{i:'👖',c:'Shorts',v:'Denim'},{i:'👡',c:'Slides',v:'White'},{i:'👜',c:'Bag',v:'Wicker Round'}],tip:'White crop top with denim shorts and white slides — a vacation classic that looks great in every photo.'},
+      {badge:'Stylish',score:75,items:[{i:'👗',c:'Dress',v:'Linen Beige'},{i:'👡',c:'Sandals',v:'Gold Flat'},{i:'💍',c:'Jewelry',v:'Shell Set'},{i:'🕶',c:'Sunnies',v:'Oversized'}],tip:'Linen beige dress with shell jewelry is the most effortlessly chic beach-to-town vacation look.'}
+    ]
+  }
+};
+
+let selectedOcc=null,savedCount=3;
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')}
+
+function selectOcc(btn){
+  document.querySelectorAll('.occ-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedOcc=btn.dataset.occ;
+  document.getElementById('genBtn').disabled=false;
+}
+
+function generateOutfits(){
+  if(!selectedOcc)return;
+  const btn=document.getElementById('genBtn');
+  btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('outfitCards').style.display='none';
+  document.getElementById('skeleton').classList.add('show');
+
+  setTimeout(()=>{
+    btn.classList.remove('loading');btn.disabled=false;
+    document.getElementById('skeleton').classList.remove('show');
+    renderOutfits(selectedOcc);
+  },1600);
+}
+
+function renderOutfits(occ){
+  const data=outfitData[occ];
+  if(!data)return;
+  const titleEl=document.getElementById('resultsTitle');
+  const subEl=document.getElementById('resultsSub');
+  titleEl.innerHTML=data.title;
+  subEl.textContent=data.sub;
+
+  const list=document.getElementById('outfitCardsList');
+  list.innerHTML='';
+  data.outfits.forEach((o,i)=>{
+    const card=document.createElement('div');
+    card.className='outfit-card'+(i===0?' featured':'');
+    card.style.animationDelay=(i*0.12)+'s';
+    card.classList.add('bounce-in');
+    card.innerHTML=`
+      <div class="outfit-card-header">
+        <span class="oc-num">Look ${i+1} of ${data.outfits.length}</span>
+        <span class="oc-badge${i===0?' best':''}">${o.badge}</span>
+      </div>
+      <div class="outfit-card-body">
+        <div class="outfit-items-row">
+          ${o.items.map((item,j)=>`
+            ${j>0?'<div class="oi-plus">+</div>':''}
+            <div class="oi">
+              <div class="oi-icon">${item.i}</div>
+              <div class="oi-cat">${item.c}</div>
+              <div class="oi-val">${item.v}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="outfit-tip">${o.tip}</div>
+        <div class="outfit-score">
+          <span class="score-label">Match score</span>
+          <div class="score-bar"><div class="score-fill" style="width:0%" data-score="${o.score}"></div></div>
+          <span class="score-num">${o.score}%</span>
+        </div>
+        <div class="outfit-actions">
+          <button class="btn-save" onclick="saveOutfit(this,'${o.badge} ${occ} look')">♡ Save this look</button>
+          <button class="btn-share" title="Share" onclick="showToast('Share link copied! 🔗')">📤</button>
+          <button class="btn-try-another" onclick="generateOutfits()">Try another</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  document.getElementById('outfitCards').style.display='block';
+  setTimeout(()=>{
+    document.querySelectorAll('.score-fill').forEach(el=>{
+      el.style.transition='width .8s ease';
+      el.style.width=el.dataset.score+'%';
+    });
+  },200);
+}
+
+function saveOutfit(btn,name){
+  if(btn.classList.contains('saved')){showToast('Already saved ♡');return}
+  btn.classList.add('saved');
+  btn.textContent='✓ Saved!';
+  savedCount++;
+  document.getElementById('savedCount').textContent=savedCount;
+  document.getElementById('savedCountTop').textContent=savedCount;
+  addToSavedGrid(name);
+  showToast('Look saved to favorites! ♡');
+}
+
+function addToSavedGrid(name){
+  const grid=document.getElementById('savedGrid');
+  const card=document.createElement('div');
+  card.className='saved-card bounce-in';
+  const occs={wedding:'💍 Wedding',eid:'🌙 Eid',office:'💼 Office',university:'🎓 University',brunch:'☕ Brunch',dinner:'🍽 Dinner',party:'🎉 Party',vacation:'✈️ Vacation'};
+  card.innerHTML=`
+    <div class="saved-occ">${occs[selectedOcc]||selectedOcc}</div>
+    <div class="saved-items-row">
+      <div class="saved-item-mini">👗</div>
+      <div class="saved-item-mini">👠</div>
+      <div class="saved-item-mini">💍</div>
+      <div class="saved-item-mini">👛</div>
+    </div>
+    <div class="saved-name">${name}</div>
+    <div class="saved-date">Saved just now</div>
+    <button class="saved-wear-btn">Wear this look →</button>
+  `;
+  grid.insertBefore(card,grid.firstChild);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.transform='translateY(0)';t.style.opacity='1';t.style.pointerEvents='auto';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateY(20px)';t.style.opacity='0';},2800);
+}
+</script>
+<script src="../assets/js/api.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  loadUserUI();
+  // Load saved outfits count
+  try {
+    const data = await Outfits.getSaved();
+    const n = data.count || 0;
+    document.getElementById('savedCount').textContent = n;
+    document.getElementById('savedCountTop').textContent = n;
+    // Render real saved outfits
+    if (data.outfits?.length) renderSavedOutfits(data.outfits);
+  } catch(err) { console.log(err.message); }
+});
+
+// Override generateOutfits to call real API
+async function generateOutfits() {
+  if (!selectedOcc) return;
+  const btn = document.getElementById('genBtn');
+  btn.classList.add('loading'); btn.disabled = true;
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('outfitCards').style.display = 'none';
+  document.getElementById('skeleton').classList.add('show');
+
+  try {
+    const data = await Outfits.generate(selectedOcc);
+    document.getElementById('skeleton').classList.remove('show');
+    renderRealOutfits(data.outfits, data.occasion);
+  } catch(err) {
+    document.getElementById('skeleton').classList.remove('show');
+    document.getElementById('emptyState').style.display = 'block';
+    document.getElementById('emptyState').querySelector('.empty-p').textContent = err.message;
+    showToast('⚠ ' + err.message);
+  } finally {
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
+}
+
+function renderRealOutfits(outfits, occ) {
+  const occLabels = {wedding:'💍 Wedding',eid:'🌙 Eid',office:'💼 Office',university:'🎓 University',brunch:'☕ Brunch',dinner:'🍽 Dinner',party:'🎉 Party',vacation:'✈️ Vacation'};
+  document.getElementById('resultsTitle').innerHTML = `Your <em>${occ}</em> looks`;
+  document.getElementById('resultsSub').textContent = `${outfits.length} combination${outfits.length !== 1 ? 's' : ''} from your wardrobe`;
+
+  const catIcons = {dress:'👗',top:'👚',shirt:'👔',blouse:'👚',trouser:'👖',jeans:'👖',
+    shoes:'👟',heels:'👠',sandals:'👡',khussa:'👟',bag:'👜',clutch:'👛',jewelry:'💍',
+    watch:'⌚',dupatta:'🧣',kameez:'🥻',kurta:'🥻',jacket:'🧥'};
+
+  const list = document.getElementById('outfitCardsList');
+  list.innerHTML = '';
+
+  outfits.forEach((outfit, i) => {
+    const card = document.createElement('div');
+    card.className = 'outfit-card' + (i === 0 ? ' featured' : '') + ' bounce-in';
+    card.style.animationDelay = (i * 0.12) + 's';
+    card.innerHTML = `
+      <div class="outfit-card-header">
+        <span class="oc-num">Look ${i + 1} of ${outfits.length}</span>
+        <span class="oc-badge${i===0?' best':''}">${outfit.badge}</span>
+      </div>
+      <div class="outfit-card-body">
+        <div class="outfit-items-row">
+          ${outfit.items.map((item, j) => {
+            const cat = item.category?.toLowerCase() || '';
+            const icon = Object.entries(catIcons).find(([k]) => cat.includes(k))?.[1] || '👗';
+            return `
+              ${j > 0 ? '<div class="oi-plus">+</div>' : ''}
+              <div class="oi">
+                ${item.image_url
+                  ? `<img src="${item.image_url}" style="width:44px;height:44px;object-fit:cover;border-radius:8px;margin-bottom:4px" alt="${item.name||''}"/>`
+                  : `<div class="oi-icon">${icon}</div>`}
+                <div class="oi-cat">${item.category}</div>
+                <div class="oi-val">${item.color || item.name || ''}</div>
+              </div>`;
+          }).join('')}
+        </div>
+        <div class="outfit-tip">${outfit.styling_tip}</div>
+        <div class="outfit-score">
+          <span class="score-label">Match score</span>
+          <div class="score-bar"><div class="score-fill" style="width:${outfit.score}%"></div></div>
+          <span class="score-num">${outfit.score}%</span>
+        </div>
+        <div class="outfit-actions">
+          <button class="btn-save" onclick="saveOutfitReal(this, ${JSON.stringify(outfit).replace(/"/g,'&quot;')})">♡ Save this look</button>
+          <button class="btn-share" onclick="showToast('🔗 Share coming soon!')">📤</button>
+          <button class="btn-try-another" onclick="generateOutfits()">Try another</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+  document.getElementById('outfitCards').style.display = 'block';
+}
+
+async function saveOutfitReal(btn, outfit) {
+  if (btn.classList.contains('saved')) { showToast('Already saved ♡'); return; }
+  try {
+    await Outfits.save({
+      name: outfit.badge + ' ' + (selectedOcc || '') + ' look',
+      occasion: selectedOcc,
+      items: outfit.items,
+      styling_tip: outfit.styling_tip,
+      score: outfit.score,
+    });
+    btn.classList.add('saved');
+    btn.textContent = '✓ Saved!';
+    const n = parseInt(document.getElementById('savedCount').textContent) + 1;
+    document.getElementById('savedCount').textContent = n;
+    document.getElementById('savedCountTop').textContent = n;
+    showToast('Look saved to favorites! ♡');
+    // Reload saved section
+    const data = await Outfits.getSaved();
+    if (data.outfits) renderSavedOutfits(data.outfits);
+  } catch(err) {
+    showToast('⚠ ' + err.message);
+  }
+}
+
+function renderSavedOutfits(outfits) {
+  const grid = document.getElementById('savedGrid');
+  if (!grid || !outfits.length) return;
+  const occIcons = {wedding:'💍',eid:'🌙',office:'💼',university:'🎓',brunch:'☕',dinner:'🍽',party:'🎉',vacation:'✈️'};
+  grid.innerHTML = outfits.slice(0, 6).map(o => `
+    <div class="saved-card">
+      <div class="saved-occ">${occIcons[o.occasion]||'📅'} ${o.occasion||'General'}</div>
+      <div class="saved-name">${o.name}</div>
+      <div class="saved-date">Saved ${new Date(o.created_at).toLocaleDateString()}</div>
+      <button class="saved-wear-btn">Wear this look →</button>
+    </div>`).join('');
+}
+</script>
+
+</body>
+</html>

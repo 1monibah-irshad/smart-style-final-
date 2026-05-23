@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blushed Style — My Wardrobe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDFBF9;--bg2:#FFF0F5;--bg3:#FDF6F9;--white:#FFFFFF;
+  --pink:#E75480;--pink-soft:#F4A7BB;--pink-pale:#FDEEF4;--pink-deep:#C2185B;
+  --border:#F2C4D0;--text:#2D1B22;--muted:#8B5A6B;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --radius:14px;--radius-sm:8px;--radius-pill:40px;--trans:0.22s ease;
+  --sidebar:220px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg3);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+
+/* ── Sidebar (same as dashboard) ── */
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:50;transition:transform var(--trans)}
+.sidebar-logo{padding:24px 22px 20px;border-bottom:1px solid var(--border);font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--text);text-decoration:none;display:block}
+.sidebar-logo span{color:var(--pink)}
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:13px;font-weight:400;color:var(--muted);text-decoration:none;cursor:pointer;transition:all var(--trans);border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--pink-pale);color:var(--pink);font-weight:500}
+.nav-icon{font-size:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:500;background:var(--pink);color:#fff;padding:2px 7px;border-radius:10px}
+.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;transition:background var(--trans);cursor:pointer}
+.user-card:hover{background:var(--bg2)}
+.user-av{width:34px;height:34px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-plan{font-size:10px;color:var(--muted)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:49}
+.sidebar-overlay.show{display:block}
+
+/* ── Main ── */
+.main{margin-left:var(--sidebar);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px;transition:background var(--trans)}
+.hamburger-btn span{display:block;width:18px;height:1.5px;background:var(--text);margin:4px 0;border-radius:2px}
+.page-title{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-av{width:36px;height:36px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:2px solid var(--border)}
+
+/* ── Content ── */
+.content{padding:28px 32px;flex:1}
+
+/* ── Filter bar ── */
+.filter-bar{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);padding:18px 22px;
+  margin-bottom:22px;
+  display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+}
+.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-label{font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.cat-tab{
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  padding:6px 16px;border-radius:var(--radius-pill);
+  border:1px solid var(--border);background:var(--bg3);color:var(--muted);
+  cursor:pointer;transition:all var(--trans);white-space:nowrap;
+}
+.cat-tab:hover{border-color:var(--pink-soft);color:var(--pink)}
+.cat-tab.active{background:var(--pink);color:#fff;border-color:var(--pink)}
+.search-inp{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-pill);padding:8px 16px;
+  margin-left:auto;
+}
+.search-inp input{
+  background:none;border:none;outline:none;
+  font-family:var(--font-body);font-size:13px;color:var(--text);width:180px;
+}
+.search-inp input::placeholder{color:var(--muted)}
+.sort-select{
+  font-family:var(--font-body);font-size:12px;color:var(--muted);
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-pill);padding:7px 14px;outline:none;cursor:pointer;
+}
+
+/* ── Grid header ── */
+.grid-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.grid-count{font-size:13px;color:var(--muted)}
+.grid-count span{font-weight:500;color:var(--text)}
+.view-btns{display:flex;gap:4px}
+.view-btn{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;transition:all var(--trans);
+}
+.view-btn.active,.view-btn:hover{background:var(--pink-pale);border-color:var(--pink-soft)}
+
+/* ── Wardrobe item cards ── */
+.wardrobe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.wardrobe-grid.list-view{grid-template-columns:1fr}
+
+.cloth-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:transform var(--trans),box-shadow var(--trans),border-color var(--trans);
+  cursor:pointer;position:relative;
+}
+.cloth-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(231,84,128,.12);border-color:var(--pink-soft)}
+.cloth-card-img{
+  height:140px;background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:56px;position:relative;
+  border-bottom:1px solid var(--border);
+}
+.cloth-card-actions{
+  position:absolute;top:8px;right:8px;
+  display:flex;gap:4px;
+  opacity:0;transition:opacity var(--trans);
+}
+.cloth-card:hover .cloth-card-actions{opacity:1}
+.action-btn{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,.9);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;
+  transition:all var(--trans);
+}
+.action-btn:hover{background:var(--pink-pale);border-color:var(--pink-soft)}
+.action-btn.delete:hover{background:#FFF0EF;border-color:#FFCDD2}
+.cloth-card-body{padding:12px}
+.cloth-card-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloth-card-cat{font-size:11px;color:var(--muted);margin-bottom:8px}
+.cloth-tags{display:flex;flex-wrap:wrap;gap:4px}
+.ctag{
+  font-size:9px;font-weight:500;padding:2px 7px;border-radius:6px;
+  background:var(--pink-pale);color:var(--pink-deep);
+}
+.ctag.season{background:var(--bg3);color:var(--muted)}
+
+/* List view card */
+.wardrobe-grid.list-view .cloth-card{display:flex;flex-direction:row;align-items:center}
+.wardrobe-grid.list-view .cloth-card-img{height:72px;width:72px;flex-shrink:0;font-size:32px;border-bottom:none;border-right:1px solid var(--border)}
+.wardrobe-grid.list-view .cloth-card-body{flex:1;padding:10px 14px}
+.wardrobe-grid.list-view .cloth-card-name{white-space:normal}
+.wardrobe-grid.list-view .cloth-card-actions{top:50%;transform:translateY(-50%);right:12px}
+
+/* Add item card */
+.add-card{
+  background:var(--white);border:1.5px dashed var(--pink-soft);
+  border-radius:var(--radius);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 16px;cursor:pointer;min-height:220px;
+  transition:all var(--trans);text-decoration:none;
+}
+.add-card:hover{background:var(--pink-pale);border-color:var(--pink)}
+.add-card-icon{font-size:32px;margin-bottom:10px}
+.add-card-label{font-size:13px;font-weight:500;color:var(--pink);margin-bottom:4px}
+.add-card-sub{font-size:11px;color:var(--muted)}
+
+/* ── Upload modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.modal-overlay.show{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--white);border-radius:24px;
+  width:92%;max-width:620px;max-height:90vh;overflow-y:auto;
+  padding:36px;
+  transform:translateY(20px);transition:transform .3s ease;
+  position:relative;
+}
+.modal-overlay.show .modal{transform:translateY(0)}
+.modal-close-btn{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:var(--muted);
+  transition:all var(--trans);
+}
+.modal-close-btn:hover{background:var(--pink-pale);color:var(--pink)}
+.modal-title{font-family:var(--font-display);font-size:26px;font-weight:500;margin-bottom:4px;color:var(--text)}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+/* Drop zone */
+.drop-zone{
+  border:2px dashed var(--pink-soft);border-radius:var(--radius);
+  background:var(--bg2);padding:36px 20px;text-align:center;
+  cursor:pointer;margin-bottom:24px;
+  transition:all var(--trans);
+}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--pink);background:var(--pink-pale)}
+.drop-icon{font-size:40px;margin-bottom:12px}
+.drop-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.drop-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.drop-btn{
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  padding:8px 22px;background:var(--pink);color:#fff;
+  border:none;border-radius:var(--radius-pill);cursor:pointer;
+  transition:background var(--trans);
+}
+.drop-btn:hover{background:var(--pink-deep)}
+
+/* Image preview */
+.img-preview{
+  display:none;width:100%;max-height:200px;object-fit:contain;
+  border-radius:var(--radius-sm);border:1px solid var(--border);
+  margin-bottom:20px;
+}
+.img-preview.show{display:block}
+
+/* Form inside modal */
+.form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px}
+.form-input{
+  width:100%;height:44px;padding:0 14px;
+  font-family:var(--font-body);font-size:13px;color:var(--text);
+  background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);outline:none;
+  transition:border-color var(--trans),box-shadow var(--trans);
+}
+.form-input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(231,84,128,.10)}
+select.form-input{cursor:pointer}
+.multi-tags{display:flex;flex-wrap:wrap;gap:6px}
+.mtag{
+  font-size:11px;font-weight:500;
+  padding:5px 13px;border-radius:var(--radius-pill);
+  border:1px solid var(--border);background:var(--bg3);color:var(--muted);
+  cursor:pointer;transition:all var(--trans);
+}
+.mtag:hover{border-color:var(--pink-soft);color:var(--pink)}
+.mtag.sel{background:var(--pink);color:#fff;border-color:var(--pink)}
+.submit-btn{
+  width:100%;height:48px;
+  font-family:var(--font-body);font-size:14px;font-weight:500;
+  background:var(--pink);color:#fff;border:none;
+  border-radius:var(--radius-pill);cursor:pointer;
+  transition:background var(--trans),transform var(--trans);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:8px;
+}
+.submit-btn:hover{background:var(--pink-deep);transform:translateY(-1px)}
+
+/* Delete confirm modal */
+.delete-modal{
+  position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:110;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.delete-modal.show{opacity:1;pointer-events:auto}
+.delete-box{
+  background:var(--white);border-radius:20px;
+  padding:32px 28px;max-width:360px;width:92%;text-align:center;
+  transform:scale(0.95);transition:transform .25s ease;
+}
+.delete-modal.show .delete-box{transform:scale(1)}
+.delete-icon{font-size:40px;margin-bottom:14px}
+.delete-title{font-family:var(--font-display);font-size:22px;font-weight:500;margin-bottom:8px}
+.delete-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6}
+.delete-btns{display:flex;gap:10px}
+.btn-cancel{flex:1;height:44px;border-radius:var(--radius-pill);background:var(--bg3);color:var(--text);border:1px solid var(--border);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:all var(--trans)}
+.btn-cancel:hover{background:var(--bg2)}
+.btn-delete{flex:1;height:44px;border-radius:var(--radius-pill);background:#E53935;color:#fff;border:none;font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;transition:background var(--trans)}
+.btn-delete:hover{background:#C62828}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(231,84,128,.12);transform:translateY(20px);opacity:0;transition:all .35s ease;z-index:200;pointer-events:none;max-width:300px}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .hamburger-btn{display:block}
+  .content{padding:16px}
+  .topbar{padding:0 16px}
+  .filter-bar{gap:8px}
+  .search-inp{margin-left:0;width:100%}
+  .search-inp input{width:100%}
+  .wardrobe-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sidebar-logo">Blushed<span>.</span>Style</a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="wardrobe.html" class="nav-item active"><span class="nav-icon">👗</span> My Wardrobe<span class="nav-badge" id="wardrobeCount">8</span></a>
+    <a href="outfits.html" class="nav-item"><span class="nav-icon">✨</span> Outfits</a>
+    <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events<span class="nav-badge">4</span></a>
+    <a href="favorites.html" class="nav-item"><span class="nav-icon">♡</span> Favorites</a>
+    <div class="nav-section-label" style="margin-top:8px">Account</div>
+    <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span> Settings</a>
+    <a href="auth.html" class="nav-item"><span class="nav-icon">↩</span> Logout</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card">
+      <div class="user-av">S</div>
+      <div><div class="user-name">Sana Malik</div><div class="user-plan">Free plan</div></div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="page-title">My Wardrobe</div>
+    </div>
+    <div class="topbar-right">
+      <button onclick="openUpload()" style="font-family:var(--font-body);font-size:13px;font-weight:500;padding:9px 20px;background:var(--pink);color:#fff;border:none;border-radius:var(--radius-pill);cursor:pointer;transition:background var(--trans)" onmouseover="this.style.background='var(--pink-deep)'" onmouseout="this.style.background='var(--pink)'">+ Add Clothes</button>
+      <div class="topbar-av">S</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-label">Category:</span>
+        <button class="cat-tab active" onclick="filterCat(this,'all')">All</button>
+        <button class="cat-tab" onclick="filterCat(this,'dress')">👗 Dresses</button>
+        <button class="cat-tab" onclick="filterCat(this,'top')">👚 Tops</button>
+        <button class="cat-tab" onclick="filterCat(this,'bottom')">👖 Bottoms</button>
+        <button class="cat-tab" onclick="filterCat(this,'shoes')">👠 Shoes</button>
+        <button class="cat-tab" onclick="filterCat(this,'jewelry')">💍 Jewelry</button>
+        <button class="cat-tab" onclick="filterCat(this,'bag')">👛 Bags</button>
+        <button class="cat-tab" onclick="filterCat(this,'traditional')">🥻 Traditional</button>
+      </div>
+      <div class="search-inp">
+        <span>🔍</span>
+        <input type="text" placeholder="Search wardrobe…" id="searchInput" oninput="filterSearch()"/>
+      </div>
+      <select class="sort-select" onchange="sortItems(this.value)">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="name">Name A–Z</option>
+        <option value="cat">Category</option>
+      </select>
+    </div>
+
+    <!-- Grid header -->
+    <div class="grid-header">
+      <div class="grid-count">Showing <span id="itemCount">8</span> items</div>
+      <div class="view-btns">
+        <div class="view-btn active" onclick="setView('grid',this)" title="Grid view">⊞</div>
+        <div class="view-btn" onclick="setView('list',this)" title="List view">☰</div>
+      </div>
+    </div>
+
+    <!-- Wardrobe grid -->
+    <div class="wardrobe-grid" id="wardrobeGrid">
+
+      <div class="cloth-card" data-cat="dress" data-name="blush maxi dress">
+        <div class="cloth-card-img">
+          👗
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Blush Maxi Dress')" title="Edit">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Blush Maxi Dress')" title="Delete">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Blush maxi dress</div>
+          <div class="cloth-card-cat">Dress · Pink · Formal</div>
+          <div class="cloth-tags">
+            <span class="ctag">Wedding</span>
+            <span class="ctag">Party</span>
+            <span class="ctag season">Summer</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="shoes" data-name="nude strappy heels">
+        <div class="cloth-card-img">
+          👠
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Nude Strappy Heels')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Nude Strappy Heels')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Nude strappy heels</div>
+          <div class="cloth-card-cat">Shoes · Nude · 3"</div>
+          <div class="cloth-tags">
+            <span class="ctag">Wedding</span>
+            <span class="ctag">Office</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="jewelry" data-name="rose gold jewelry set">
+        <div class="cloth-card-img">
+          💍
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Rose Gold Jewelry Set')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Rose Gold Jewelry Set')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Rose gold jewelry set</div>
+          <div class="cloth-card-cat">Jewelry · Rose Gold · Statement</div>
+          <div class="cloth-tags">
+            <span class="ctag">Wedding</span>
+            <span class="ctag">Special</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="traditional" data-name="ivory embroidered kameez">
+        <div class="cloth-card-img">
+          🥻
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Ivory Kameez')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Ivory Kameez')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Ivory embroidered kameez</div>
+          <div class="cloth-card-cat">Traditional · Ivory · Embroidered</div>
+          <div class="cloth-tags">
+            <span class="ctag">Eid</span>
+            <span class="ctag">Wedding</span>
+            <span class="ctag season">All seasons</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="bag" data-name="gold mini clutch">
+        <div class="cloth-card-img">
+          👛
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Gold Mini Clutch')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Gold Mini Clutch')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Gold mini clutch</div>
+          <div class="cloth-card-cat">Bag · Gold · Evening</div>
+          <div class="cloth-tags">
+            <span class="ctag">Party</span>
+            <span class="ctag">Wedding</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="traditional" data-name="cream chiffon dupatta">
+        <div class="cloth-card-img">
+          🧣
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Cream Dupatta')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Cream Dupatta')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Cream chiffon dupatta</div>
+          <div class="cloth-card-cat">Dupatta · Cream · Light</div>
+          <div class="cloth-tags">
+            <span class="ctag">Eid</span>
+            <span class="ctag season">Spring</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="top" data-name="white silk blouse">
+        <div class="cloth-card-img">
+          👚
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'White Silk Blouse')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'White Silk Blouse')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">White silk blouse</div>
+          <div class="cloth-card-cat">Top · White · Formal</div>
+          <div class="cloth-tags">
+            <span class="ctag">Office</span>
+            <span class="ctag">Brunch</span>
+            <span class="ctag season">All seasons</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cloth-card" data-cat="bottom" data-name="black slim trousers">
+        <div class="cloth-card-img">
+          👖
+          <div class="cloth-card-actions">
+            <div class="action-btn" onclick="editItem(event,'Black Slim Trousers')">✏</div>
+            <div class="action-btn delete" onclick="confirmDelete(event,'Black Slim Trousers')">🗑</div>
+          </div>
+        </div>
+        <div class="cloth-card-body">
+          <div class="cloth-card-name">Black slim trousers</div>
+          <div class="cloth-card-cat">Bottom · Black · Slim fit</div>
+          <div class="cloth-tags">
+            <span class="ctag">Office</span>
+            <span class="ctag">Casual</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add new card -->
+      <div class="add-card" onclick="openUpload()">
+        <div class="add-card-icon">📸</div>
+        <div class="add-card-label">Add new item</div>
+        <div class="add-card-sub">Upload a photo</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <button class="modal-close-btn" onclick="closeUpload()">✕</button>
+    <div class="modal-title">Add to wardrobe</div>
+    <div class="modal-sub">Upload a photo and tag your item — takes under 2 minutes.</div>
+
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="handleDrop(event)">
+      <div class="drop-icon" id="dropIcon">📸</div>
+      <div class="drop-title">Drop your photo here</div>
+      <div class="drop-sub">JPG, PNG, WEBP supported · Max 10MB</div>
+      <button class="drop-btn" type="button">Browse photos</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="previewImage(event)"/>
+    <img id="imgPreview" class="img-preview" alt="Preview"/>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-input" id="catSelect">
+          <option value="">Select category…</option>
+          <option>Dress</option><option>Top / Blouse</option><option>Shirt</option>
+          <option>Trouser / Pants</option><option>Skirt</option>
+          <option>Shalwar Kameez</option><option>Kurta</option>
+          <option>Jacket / Coat</option><option>Heels / Shoes</option>
+          <option>Sandals / Flats</option><option>Sneakers</option>
+          <option>Jewelry Set</option><option>Ring</option><option>Necklace</option>
+          <option>Watch</option><option>Bag / Clutch</option>
+          <option>Dupatta / Scarf</option><option>Accessory</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color *</label>
+        <input class="form-input" type="text" placeholder="e.g. blush pink, ivory…" id="colorInput"/>
+      </div>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label class="form-label">Style</label>
+        <select class="form-input">
+          <option>Formal</option><option>Casual</option><option>Traditional</option>
+          <option>Sporty</option><option>Party</option><option>Bohemian</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Brand (optional)</label>
+        <input class="form-input" type="text" placeholder="e.g. Khaadi, Zara…"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Occasion (select all that apply)</label>
+      <div class="multi-tags" id="occTags">
+        <span class="mtag" onclick="toggleTag(this)">💍 Wedding</span>
+        <span class="mtag" onclick="toggleTag(this)">🌙 Eid</span>
+        <span class="mtag" onclick="toggleTag(this)">💼 Office</span>
+        <span class="mtag" onclick="toggleTag(this)">🎓 University</span>
+        <span class="mtag" onclick="toggleTag(this)">☕ Brunch</span>
+        <span class="mtag" onclick="toggleTag(this)">🍽 Dinner</span>
+        <span class="mtag" onclick="toggleTag(this)">🎉 Party</span>
+        <span class="mtag" onclick="toggleTag(this)">✈️ Vacation</span>
+        <span class="mtag" onclick="toggleTag(this)">👕 Casual</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Season</label>
+      <div class="multi-tags">
+        <span class="mtag" onclick="toggleTag(this)">🌸 Spring</span>
+        <span class="mtag" onclick="toggleTag(this)">☀️ Summer</span>
+        <span class="mtag" onclick="toggleTag(this)">🍂 Autumn</span>
+        <span class="mtag" onclick="toggleTag(this)">❄️ Winter</span>
+        <span class="mtag sel" onclick="toggleTag(this)">✓ All seasons</span>
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="saveItem()">
+      Save to my wardrobe ✦
+    </button>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="delete-modal" id="deleteModal">
+  <div class="delete-box">
+    <div class="delete-icon">🗑</div>
+    <div class="delete-title">Remove this item?</div>
+    <div class="delete-sub" id="deleteSubText">This will permanently remove the item from your wardrobe. This action cannot be undone.</div>
+    <div class="delete-btns">
+      <button class="btn-cancel" onclick="closeDelete()">Keep it</button>
+      <button class="btn-delete" onclick="doDelete()">Remove</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let currentCat='all', currentDelItem='', currentDelCard=null;
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')}
+
+function filterCat(btn,cat){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentCat=cat;applyFilters();
+}
+function filterSearch(){applyFilters()}
+function applyFilters(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const cards=document.querySelectorAll('.cloth-card');
+  let visible=0;
+  cards.forEach(c=>{
+    const catMatch=currentCat==='all'||c.dataset.cat===currentCat;
+    const nameMatch=!q||c.dataset.name.toLowerCase().includes(q);
+    const show=catMatch&&nameMatch;
+    c.style.display=show?'':'none';
+    if(show)visible++;
+  });
+  document.getElementById('itemCount').textContent=visible;
+}
+function sortItems(v){showToast('Sorted by '+v+' ✓')}
+
+function setView(v,btn){
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid=document.getElementById('wardrobeGrid');
+  v==='list'?grid.classList.add('list-view'):grid.classList.remove('list-view');
+}
+
+function openUpload(){document.getElementById('uploadModal').classList.add('show')}
+function closeUpload(){document.getElementById('uploadModal').classList.remove('show')}
+document.getElementById('uploadModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeUpload()});
+
+function dragOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over')}
+function dragLeave(){document.getElementById('dropZone').classList.remove('drag-over')}
+function handleDrop(e){e.preventDefault();dragLeave();const f=e.dataTransfer.files[0];if(f)previewFile(f)}
+function previewImage(e){const f=e.target.files[0];if(f)previewFile(f)}
+function previewFile(f){
+  const r=new FileReader();
+  r.onload=ev=>{
+    const img=document.getElementById('imgPreview');
+    img.src=ev.target.result;img.classList.add('show');
+    document.getElementById('dropIcon').textContent='✓';
+    document.getElementById('dropZone').style.borderColor='var(--pink)';
+  };
+  r.readAsDataURL(f);
+}
+
+function toggleTag(el){el.classList.toggle('sel')}
+
+function saveItem(){
+  const cat=document.getElementById('catSelect').value;
+  const color=document.getElementById('colorInput').value;
+  if(!cat){showToast('⚠ Please select a category');return}
+  if(!color){showToast('⚠ Please enter a color');return}
+  closeUpload();
+  showToast('✨ Item added to your wardrobe!');
+  const count=parseInt(document.getElementById('wardrobeCount').textContent)+1;
+  document.getElementById('wardrobeCount').textContent=count;
+  document.getElementById('itemCount').textContent=parseInt(document.getElementById('itemCount').textContent)+1;
+  document.getElementById('catSelect').value='';
+  document.getElementById('colorInput').value='';
+  document.getElementById('imgPreview').classList.remove('show');
+  document.getElementById('dropIcon').textContent='📸';
+  document.getElementById('dropZone').style.borderColor='';
+  document.querySelectorAll('.mtag').forEach(t=>t.classList.remove('sel'));
+}
+
+function editItem(e,name){e.stopPropagation();showToast('✏ Editing: '+name);openUpload()}
+function confirmDelete(e,name){e.stopPropagation();currentDelItem=name;currentDelCard=e.target.closest('.cloth-card');document.getElementById('deleteSubText').textContent='Remove "'+name+'" from your wardrobe? This cannot be undone.';document.getElementById('deleteModal').classList.add('show')}
+function closeDelete(){document.getElementById('deleteModal').classList.remove('show')}
+function doDelete(){
+  if(currentDelCard){currentDelCard.style.opacity='0';currentDelCard.style.transform='scale(0.8)';currentDelCard.style.transition='all .3s ease';setTimeout(()=>{currentDelCard.remove();},300);}
+  closeDelete();showToast('🗑 Item removed from wardrobe');
+  const c=parseInt(document.getElementById('wardrobeCount').textContent)-1;
+  document.getElementById('wardrobeCount').textContent=Math.max(0,c);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.transform='translateY(0)';t.style.opacity='1';t.style.pointerEvents='auto';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateY(20px)';t.style.opacity='0';},2800);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeUpload();closeDelete()}});
+</script>
+<script src="../assets/js/api.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  loadUserUI();
+  await loadWardrobe();
+});
+
+async function loadWardrobe(filters = {}) {
+  try {
+    const data = await Wardrobe.getAll(filters);
+    renderRealItems(data.items || []);
+    const countEl = document.getElementById('itemCount');
+    if (countEl) countEl.textContent = data.count || 0;
+    const badgeEl = document.getElementById('wardrobeCount');
+    if (badgeEl) badgeEl.textContent = data.count || 0;
+  } catch(err) {
+    showToast('⚠ ' + err.message);
+  }
+}
+
+function renderRealItems(items) {
+  const grid = document.getElementById('wardrobeGrid');
+  if (!grid) return;
+
+  // Keep only the "add new" card, remove existing item cards
+  const addCard = grid.querySelector('.add-card');
+  grid.innerHTML = '';
+
+  if (!items.length) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:var(--muted);font-size:13px">
+        <div style="font-size:40px;margin-bottom:12px">👗</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--text);margin-bottom:8px">Your wardrobe is empty</div>
+        <div>Upload your first clothing item to get started!</div>
+      </div>`;
+    if (addCard) grid.appendChild(addCard);
+    return;
+  }
+
+  const catIcons = {dress:'👗',top:'👚',shirt:'👔',blouse:'👚',trouser:'👖',jeans:'👖',
+    shoes:'👟',heels:'👠',sandals:'👡',khussa:'👟',bag:'👜',clutch:'👛',jewelry:'💍',
+    watch:'⌚',dupatta:'🧣',kameez:'🥻',kurta:'🥻',jacket:'🧥',scarf:'🧣',shorts:'🩳'};
+
+  items.forEach(item => {
+    const cat = item.category?.toLowerCase() || '';
+    const icon = Object.entries(catIcons).find(([k]) => cat.includes(k))?.[1] || '👗';
+    const card = document.createElement('div');
+    card.className = 'cloth-card';
+    card.dataset.cat = item.category;
+    card.dataset.name = (item.name || item.category || '').toLowerCase();
+    card.dataset.id = item.id;
+    card.innerHTML = `
+      <div class="cloth-card-img" style="${item.image_url ? 'padding:0;overflow:hidden' : ''}">
+        ${item.image_url
+          ? `<img src="${item.image_url}" alt="${item.name||''}" style="width:100%;height:100%;object-fit:cover"/>`
+          : icon}
+        <div class="cloth-card-actions">
+          <div class="action-btn" onclick="editItem(event,'${item.id}')" title="Edit">✏</div>
+          <div class="action-btn delete" onclick="confirmDelete(event,'${item.name||item.category}','${item.id}')" title="Delete">🗑</div>
+        </div>
+      </div>
+      <div class="cloth-card-body">
+        <div class="cloth-card-name">${item.name || item.category}</div>
+        <div class="cloth-card-cat">${item.category} · ${item.color || ''} · ${item.style || ''}</div>
+        <div class="cloth-tags">
+          ${(item.occasion||[]).map(o=>`<span class="ctag">${o}</span>`).join('')}
+          ${(item.season||[]).map(s=>`<span class="ctag season">${s}</span>`).join('')}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  if (addCard) grid.appendChild(addCard);
+}
+
+// Override saveItem to call real API
+async function saveItem() {
+  const category = document.getElementById('catSelect').value;
+  const color    = document.getElementById('colorInput').value;
+  const file     = document.getElementById('fileInput').files[0];
+
+  if (!category) { showToast('⚠ Please select a category'); return; }
+  if (!color)    { showToast('⚠ Please enter a color');    return; }
+  if (!file)     { showToast('⚠ Please upload an image');   return; }
+
+  const form = new FormData();
+  form.append('image',    file);
+  form.append('category', category);
+  form.append('color',    color);
+
+  const styleEl  = document.querySelector('.modal select:not(#catSelect)');
+  const brandEl  = document.querySelector('.modal input[placeholder*="Zara"]');
+  if (styleEl) form.append('style', styleEl.value);
+  if (brandEl) form.append('brand', brandEl.value);
+
+  const selOcc = [...document.querySelectorAll('#occTags .mtag.sel')].map(t => t.textContent.replace(/^[^\w]+/,'').trim().toLowerCase());
+  const selSea = [...document.querySelectorAll('.multi-tags:not(#occTags) .mtag.sel')].map(t => t.textContent.replace(/^[^\w]+/,'').trim().toLowerCase());
+  form.append('occasion', JSON.stringify(selOcc));
+  form.append('season',   JSON.stringify(selSea));
+
+  const btn = document.querySelector('.submit-btn');
+  if (btn) { btn.textContent = 'Saving…'; btn.disabled = true; }
+
+  try {
+    await Wardrobe.create(form);
+    closeUpload();
+    showToast('✨ Added to your wardrobe!');
+    await loadWardrobe();
+  } catch(err) {
+    showToast('⚠ ' + err.message);
+  } finally {
+    if (btn) { btn.textContent = 'Save to my wardrobe ✦'; btn.disabled = false; }
+  }
+}
+
+// Real delete
+async function doDelete() {
+  const id = document.getElementById('deleteModal')?.dataset.deleteId;
+  if (!id) return;
+  try {
+    await Wardrobe.delete(id);
+    closeDelete();
+    showToast('🗑 Item removed');
+    await loadWardrobe();
+  } catch(err) {
+    showToast('⚠ ' + err.message);
+  }
+}
+
+function confirmDelete(e, name, id) {
+  e.stopPropagation();
+  const modal = document.getElementById('deleteModal');
+  if (modal) { modal.dataset.deleteId = id; }
+  document.getElementById('deleteSubText').textContent = `Remove "${name}" from your wardrobe? This cannot be undone.`;
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+// Filter/search triggers real API
+let filterTimeout;
+document.getElementById('searchInput')?.addEventListener('input', function() {
+  clearTimeout(filterTimeout);
+  filterTimeout = setTimeout(() => loadWardrobe({ search: this.value }), 400);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blushed Style — Favorites</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FDFBF9;--bg2:#FFF0F5;--bg3:#FDF6F9;--white:#FFFFFF;
+  --pink:#E75480;--pink-soft:#F4A7BB;--pink-pale:#FDEEF4;--pink-deep:#C2185B;
+  --border:#F2C4D0;--text:#2D1B22;--muted:#8B5A6B;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'DM Sans',sans-serif;
+  --radius:14px;--radius-sm:8px;--radius-pill:40px;--trans:0.22s ease;
+  --sidebar:220px;
+}
+body{font-family:var(--font-body);background:var(--bg3);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex}
+
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:50;transition:transform var(--trans)}
+.sidebar-logo{padding:24px 22px 20px;border-bottom:1px solid var(--border);font-family:var(--font-display);font-size:20px;font-weight:600;color:var(--text);text-decoration:none;display:block}
+.sidebar-logo span{color:var(--pink)}
+.sidebar-nav{flex:1;padding:16px 10px;display:flex;flex-direction:column;gap:2px}
+.nav-section-label{font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:13px;color:var(--muted);text-decoration:none;cursor:pointer;transition:all var(--trans);border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:var(--bg2);color:var(--text)}
+.nav-item.active{background:var(--pink-pale);color:var(--pink);font-weight:500}
+.nav-icon{font-size:16px;flex-shrink:0}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:500;background:var(--pink);color:#fff;padding:2px 7px;border-radius:10px}
+.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background var(--trans)}
+.user-card:hover{background:var(--bg2)}
+.user-av{width:34px;height:34px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;flex-shrink:0}
+.user-name{font-size:13px;font-weight:500;color:var(--text)}
+.user-plan{font-size:10px;color:var(--muted)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(45,27,34,.4);z-index:49}
+.sidebar-overlay.show{display:block}
+
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.hamburger-btn{display:none;background:none;border:none;cursor:pointer;padding:6px;border-radius:8px}
+.hamburger-btn span{display:block;width:18px;height:1.5px;background:var(--text);margin:4px 0;border-radius:2px}
+.page-title{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--text)}
+.topbar-av{width:36px;height:36px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#fff;cursor:pointer;border:2px solid var(--border)}
+
+.content{padding:28px 32px;flex:1}
+
+/* Filter strip */
+.filter-strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.fchip{font-family:var(--font-body);font-size:12px;font-weight:500;padding:7px 18px;border-radius:var(--radius-pill);border:1px solid var(--border);background:var(--bg3);color:var(--muted);cursor:pointer;transition:all var(--trans)}
+.fchip:hover{border-color:var(--pink-soft);color:var(--pink)}
+.fchip.active{background:var(--pink);color:#fff;border-color:var(--pink)}
+.sort-select{font-family:var(--font-body);font-size:12px;color:var(--muted);background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-pill);padding:7px 14px;outline:none;cursor:pointer;margin-left:auto}
+
+/* Stats bar */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.sbar{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;text-align:center}
+.sbar-num{font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--pink)}
+.sbar-lbl{font-size:11px;color:var(--muted)}
+
+/* Favorites grid */
+.fav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.fav-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  transition:all var(--trans);
+}
+.fav-card:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(231,84,128,.11);border-color:var(--pink-soft)}
+.fav-card-header{
+  background:var(--bg2);padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+}
+.fav-occ{font-size:12px;font-weight:500;color:var(--pink-deep)}
+.fav-heart{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--white);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;transition:all var(--trans);
+}
+.fav-heart:hover{background:var(--pink);border-color:var(--pink)}
+.fav-heart:hover span{filter:brightness(0) invert(1)}
+.fav-card-body{padding:16px}
+.fav-name{font-family:var(--font-display);font-size:18px;font-weight:500;color:var(--text);margin-bottom:4px}
+.fav-date{font-size:11px;color:var(--muted);margin-bottom:14px}
+.fav-items{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.fav-item{
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;min-width:58px;text-align:center;
+  transition:all var(--trans);
+}
+.fav-item:hover{border-color:var(--pink-soft);transform:translateY(-1px)}
+.fi-icon{font-size:20px;margin-bottom:3px}
+.fi-lbl{font-size:9px;color:var(--muted)}
+.fi-val{font-size:10px;font-weight:500;color:var(--text)}
+.fav-tip{font-size:12px;font-style:italic;color:var(--pink-deep);padding:9px 12px;background:var(--pink-pale);border-radius:8px;border-left:3px solid var(--pink-soft);margin-bottom:14px;line-height:1.5}
+.fav-score{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.score-label{font-size:11px;color:var(--muted)}
+.score-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.score-fill{height:100%;background:var(--pink);border-radius:2px}
+.score-num{font-size:11px;font-weight:500;color:var(--pink)}
+.fav-actions{display:flex;gap:7px}
+.btn-wear{flex:1;height:38px;font-family:var(--font-body);font-size:12px;font-weight:500;background:var(--pink);color:#fff;border:none;border-radius:var(--radius-pill);cursor:pointer;transition:background var(--trans)}
+.btn-wear:hover{background:var(--pink-deep)}
+.btn-icon{height:38px;width:38px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all var(--trans);flex-shrink:0}
+.btn-icon:hover{background:var(--pink-pale);border-color:var(--pink-soft)}
+.btn-icon.del:hover{background:#FFF0EF;border-color:#FFCDD2}
+
+/* Empty state */
+.empty{text-align:center;padding:64px 24px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius)}
+.empty-icon{font-size:52px;margin-bottom:16px}
+.empty-h{font-family:var(--font-display);font-size:24px;font-weight:500;margin-bottom:8px}
+.empty-p{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.65;max-width:300px;margin-left:auto;margin-right:auto}
+.btn-goto{display:inline-block;padding:11px 28px;background:var(--pink);color:#fff;border:none;border-radius:var(--radius-pill);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:background var(--trans)}
+.btn-goto:hover{background:var(--pink-deep)}
+
+@keyframes bounceIn{0%{opacity:0;transform:scale(.85)}60%{transform:scale(1.03)}100%{opacity:1;transform:scale(1)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease both}
+.bounce-in{animation:bounceIn .4s ease both}
+
+#toast{position:fixed;bottom:24px;right:24px;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:13px 18px;font-size:13px;color:var(--text);box-shadow:0 8px 32px rgba(231,84,128,.12);transform:translateY(20px);opacity:0;transition:all .35s ease;z-index:200;pointer-events:none;max-width:300px}
+
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.hamburger-btn{display:block}.content{padding:16px}.topbar{padding:0 16px}.stats-bar{grid-template-columns:repeat(2,1fr)}.fav-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sidebar-logo">Blushed<span>.</span>Style</a>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="wardrobe.html" class="nav-item"><span class="nav-icon">👗</span> My Wardrobe<span class="nav-badge">8</span></a>
+    <a href="outfits.html" class="nav-item"><span class="nav-icon">✨</span> Outfits</a>
+    <a href="events.html" class="nav-item"><span class="nav-icon">📅</span> Events<span class="nav-badge">4</span></a>
+    <a href="favorites.html" class="nav-item active"><span class="nav-icon">♡</span> Favorites</a>
+    <div class="nav-section-label" style="margin-top:8px">Account</div>
+    <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span> Settings</a>
+    <a href="auth.html" class="nav-item"><span class="nav-icon">↩</span> Logout</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-card"><div class="user-av">S</div><div><div class="user-name">Sana Malik</div><div class="user-plan">Free plan</div></div></div>
+  </div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+      <div class="page-title">Saved Looks ♡</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:12px;color:var(--muted)"><span id="favCountTop" style="color:var(--pink);font-weight:500">3</span> saved looks</span>
+      <div class="topbar-av">S</div>
+    </div>
+  </header>
+  <div class="content">
+    <div class="stats-bar fade-up">
+      <div class="sbar"><div class="sbar-num" id="totalFavs">3</div><div class="sbar-lbl">Saved looks</div></div>
+      <div class="sbar"><div class="sbar-num">3</div><div class="sbar-lbl">Occasions covered</div></div>
+      <div class="sbar"><div class="sbar-num">12</div><div class="sbar-lbl">Items used</div></div>
+      <div class="sbar"><div class="sbar-num">91%</div><div class="sbar-lbl">Avg match score</div></div>
+    </div>
+    <div class="filter-strip fade-up" style="animation-delay:.08s">
+      <button class="fchip active" onclick="filterFavs(this,'all')">All looks</button>
+      <button class="fchip" onclick="filterFavs(this,'wedding')">💍 Wedding</button>
+      <button class="fchip" onclick="filterFavs(this,'eid')">🌙 Eid</button>
+      <button class="fchip" onclick="filterFavs(this,'office')">💼 Office</button>
+      <button class="fchip" onclick="filterFavs(this,'brunch')">☕ Brunch</button>
+      <button class="fchip" onclick="filterFavs(this,'party')">🎉 Party</button>
+      <select class="sort-select" onchange="sortFavs(this.value)">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="score">Best match</option>
+      </select>
+    </div>
+    <div class="fav-grid fade-up" id="favGrid" style="animation-delay:.14s"></div>
+    <div class="empty" id="emptyFavs" style="display:none">
+      <div class="empty-icon">♡</div>
+      <div class="empty-h">No saved looks yet</div>
+      <div class="empty-p">Generate outfits in the AI Stylist and save the ones you love — they'll all appear here.</div>
+      <a href="outfits.html" class="btn-goto">Go to AI Stylist ✦</a>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+<script>
+let favs=[
+  {id:1,name:"Ivory wedding look",occ:"💍 Wedding",occKey:"wedding",score:92,date:"2 days ago",items:[{i:'🥻',l:'Kameez',v:'Ivory Emb.'},{i:'👠',l:'Heels',v:'Gold Strappy'},{i:'💍',l:'Jewelry',v:'Kundan Set'},{i:'🧣',l:'Dupatta',v:'Cream'}],tip:"Ivory and gold is a timeless bridal guest combination — classic, elegant and always camera-ready."},
+  {id:2,name:"Classic office combo",occ:"💼 Office",occKey:"office",score:94,date:"5 days ago",items:[{i:'👚',l:'Blouse',v:'White Silk'},{i:'👖',l:'Trousers',v:'Black Slim'},{i:'👜',l:'Bag',v:'Tan Tote'},{i:'👟',l:'Flats',v:'Nude Pointed'}],tip:"Black and white with a tan accent is the most reliable office formula — polished every single time."},
+  {id:3,name:"Festive Eid look",occ:"🌙 Eid",occKey:"eid",score:88,date:"1 week ago",items:[{i:'🥻',l:'Kameez',v:'Ivory Emb.'},{i:'👟',l:'Khussa',v:'Gold Emb.'},{i:'💍',l:'Jewelry',v:'Kundan'},{i:'🧣',l:'Dupatta',v:'Cream Chiffon'}],tip:"Traditional Eid dressing at its finest — ivory kameez, embroidered khussa, kundan jewelry. Absolutely gorgeous."}
+];
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show')}
+
+function renderFavs(list){
+  const grid=document.getElementById('favGrid');
+  const empty=document.getElementById('emptyFavs');
+  if(!list.length){grid.style.display='none';empty.style.display='block';return}
+  grid.style.display='grid';empty.style.display='none';
+  grid.innerHTML='';
+  list.forEach((f,i)=>{
+    const card=document.createElement('div');
+    card.className='fav-card bounce-in';card.style.animationDelay=(i*0.08)+'s';card.dataset.occ=f.occKey;
+    card.innerHTML=`
+      <div class="fav-card-header">
+        <span class="fav-occ">${f.occ}</span>
+        <div class="fav-heart" onclick="removeFav(${f.id})" title="Remove from favorites"><span>♡</span></div>
+      </div>
+      <div class="fav-card-body">
+        <div class="fav-name">${f.name}</div>
+        <div class="fav-date">Saved ${f.date}</div>
+        <div class="fav-items">${f.items.map(it=>`<div class="fav-item"><div class="fi-icon">${it.i}</div><div class="fi-lbl">${it.l}</div><div class="fi-val">${it.v}</div></div>`).join('')}</div>
+        <div class="fav-tip">${f.tip}</div>
+        <div class="fav-score">
+          <span class="score-label">Match score</span>
+          <div class="score-bar"><div class="score-fill" style="width:${f.score}%"></div></div>
+          <span class="score-num">${f.score}%</span>
+        </div>
+        <div class="fav-actions">
+          <button class="btn-wear" onclick="wearLook('${f.name}')">Wear this look →</button>
+          <div class="btn-icon" onclick="shareLook('${f.name}')" title="Share">📤</div>
+          <div class="btn-icon del" onclick="removeFav(${f.id})" title="Remove">🗑</div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterFavs(btn,key){
+  document.querySelectorAll('.fchip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  const filtered=key==='all'?favs:favs.filter(f=>f.occKey===key);
+  renderFavs(filtered);
+}
+function sortFavs(v){
+  const sorted=[...favs];
+  if(v==='score')sorted.sort((a,b)=>b.score-a.score);
+  renderFavs(sorted);
+}
+function removeFav(id){
+  favs=favs.filter(f=>f.id!==id);
+  renderFavs(favs);
+  const c=favs.length;
+  document.getElementById('totalFavs').textContent=c;
+  document.getElementById('favCountTop').textContent=c;
+  showToast('Removed from favorites');
+}
+function wearLook(name){showToast('📅 Linked to your next event! ✓')}
+function shareLook(name){showToast('🔗 Share link copied!')}
+
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.style.transform='translateY(0)';t.style.opacity='1';t.style.pointerEvents='auto';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateY(20px)';t.style.opacity='0';},2800);
+}
+renderFavs(favs);
+</script>
+<script src="../assets/js/api.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!requireAuth()) return;
+  loadUserUI();
+  try {
+    const data = await Outfits.getSaved();
+    favs = (data.outfits || []).map(o => ({
+      id: o.id,
+      name: o.name,
+      occ: (()=>{const icons={wedding:'💍',eid:'🌙',office:'💼',brunch:'☕',party:'🎉',dinner:'🍽',vacation:'✈️',university:'🎓'}; return (icons[o.occasion]||'📅')+' '+o.occasion;})(),
+      occKey: o.occasion,
+      score: o.score || 80,
+      date: new Date(o.created_at).toLocaleDateString(),
+      items: [],
+      tip: o.styling_tip || 'A great outfit combination from your wardrobe.',
+    }));
+    const n = favs.length;
+    document.getElementById('totalFavs').textContent = n;
+    document.getElementById('favCountTop').textContent = n;
+    renderFavs(favs);
+  } catch(err) { showToast('Could not load favorites: ' + err.message); }
+});
+
+async function removeFav(id) {
+  try {
+    await Outfits.delete(id);
+    favs = favs.filter(f => f.id !== id);
+    renderFavs(favs);
+    const n = favs.length;
+    document.getElementById('totalFavs').textContent = n;
+    document.getElementById('favCountTop').textContent = n;
+    showToast('Removed from favorites');
+  } catch(err) { showToast('Could not remove: ' + err.message); }
+}
+</script>
+
+</body>
+</html>
